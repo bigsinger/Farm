@@ -39,9 +39,10 @@ Cocos Creator的优势在UI设计上，但是痛苦在代码编写上。
 - 碎图工具：TextureUnpacker
 
 ## 参考
+### 参考了
 - https://github.com/sky94520/Farm/tree/Farm-09
-- https://github.com/kryvytskyidenys/Flower-farm
-- https://github.com/cocos56/coocs2d-x_C-_Demos
 - [SDL农场游戏开发](https://blog.csdn.net/bull521/category_7534900.html)
+
+### 可以参考的
 - [cocos2dx 植物大战僵尸](https://blog.csdn.net/bull521/category_6524913.html)
 - [pasture：一款cocos-creator创建的农场游戏](https://github.com/shockingsrose/pasture)
