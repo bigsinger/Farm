@@ -46,3 +46,4 @@ Cocos Creator的优势在UI设计上，但是痛苦在代码编写上。
 ### 可以参考的
 - [cocos2dx 植物大战僵尸](https://blog.csdn.net/bull521/category_6524913.html)
 - [pasture：一款cocos-creator创建的农场游戏](https://github.com/shockingsrose/pasture)
+- [cocos2dx-lua 实现的贪吃蛇游戏项目](https://github.com/doctording/cocos2dx_lua_snake)
