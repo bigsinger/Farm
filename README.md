@@ -8,7 +8,7 @@ cocos制作的农场游戏demo源码 一个cocos2dxC++版本 一个cocos creator
 因为他的工程代码是C++的，所以就使用了cocos2dxC++版本创建的项目，使用的是4.0版本的cocos2dx，需要自行下载编译，然后直接拿cpp-empty-test工程修改的，好在代码风格差不多，所以迁移还算顺利。
 
 效果图：
-
+![](./screenshot/1.png)
 
 ## Cocos Creator版本
 
@@ -20,6 +20,7 @@ cocos制作的农场游戏demo源码 一个cocos2dxC++版本 一个cocos creator
 好在支持了TypeScript，但仍然不够，代码编辑器选取的是VSCode也是不给力，跟VisualStudio、IDEA等差得太远了。
 
 效果图：
+![](./screenshot/2.png)
 
 
 # 其他
