@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:f2bd93f055ae137c1299c641047d1c1c:ec366003bd389a384040533fb9028511:b65ab2f3fdb3f8ca4053e58fef6ddbdf$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="butterfly.png" width="120" height="750">
+    <sprite n="butterfly_01_01.png" x="0" y="0" w="30" h="25"/>
+    <sprite n="butterfly_01_02.png" x="30" y="0" w="30" h="25"/>
+    <sprite n="butterfly_01_03.png" x="60" y="0" w="30" h="25"/>
+    <sprite n="butterfly_01_04.png" x="90" y="0" w="30" h="25"/>
+    <sprite n="butterfly_01_05.png" x="0" y="25" w="30" h="25"/>
+    <sprite n="butterfly_01_06.png" x="30" y="25" w="30" h="25"/>
+    <sprite n="butterfly_01_07.png" x="60" y="25" w="30" h="25"/>
+    <sprite n="butterfly_01_08.png" x="90" y="25" w="30" h="25"/>
+    <sprite n="butterfly_01_09.png" x="0" y="50" w="30" h="25"/>
+    <sprite n="butterfly_01_10.png" x="30" y="50" w="30" h="25"/>
+    <sprite n="butterfly_01_11.png" x="60" y="50" w="30" h="25"/>
+    <sprite n="butterfly_01_12.png" x="90" y="50" w="30" h="25"/>
+    <sprite n="butterfly_02_01.png" x="0" y="75" w="30" h="25"/>
+    <sprite n="butterfly_02_02.png" x="30" y="75" w="30" h="25"/>
+    <sprite n="butterfly_02_03.png" x="60" y="75" w="30" h="25"/>
+    <sprite n="butterfly_02_04.png" x="90" y="75" w="30" h="25"/>
+    <sprite n="butterfly_02_05.png" x="0" y="100" w="30" h="25"/>
+    <sprite n="butterfly_02_06.png" x="30" y="100" w="30" h="25"/>
+    <sprite n="butterfly_02_07.png" x="60" y="100" w="30" h="25"/>
+    <sprite n="butterfly_02_08.png" x="90" y="100" w="30" h="25"/>
+    <sprite n="butterfly_02_09.png" x="0" y="125" w="30" h="25"/>
+    <sprite n="butterfly_02_10.png" x="30" y="125" w="30" h="25"/>
+    <sprite n="butterfly_02_11.png" x="60" y="125" w="30" h="25"/>
+    <sprite n="butterfly_02_12.png" x="90" y="125" w="30" h="25"/>
+    <sprite n="butterfly_03_01.png" x="0" y="150" w="30" h="25"/>
+    <sprite n="butterfly_03_02.png" x="30" y="150" w="30" h="25"/>
+    <sprite n="butterfly_03_03.png" x="60" y="150" w="30" h="25"/>
+    <sprite n="butterfly_03_04.png" x="90" y="150" w="30" h="25"/>
+    <sprite n="butterfly_03_05.png" x="0" y="175" w="30" h="25"/>
+    <sprite n="butterfly_03_06.png" x="30" y="175" w="30" h="25"/>
+    <sprite n="butterfly_03_07.png" x="60" y="175" w="30" h="25"/>
+    <sprite n="butterfly_03_08.png" x="90" y="175" w="30" h="25"/>
+    <sprite n="butterfly_03_09.png" x="0" y="200" w="30" h="25"/>
+    <sprite n="butterfly_03_10.png" x="30" y="200" w="30" h="25"/>
+    <sprite n="butterfly_03_11.png" x="60" y="200" w="30" h="25"/>
+    <sprite n="butterfly_03_12.png" x="90" y="200" w="30" h="25"/>
+    <sprite n="butterfly_04_01.png" x="0" y="225" w="30" h="25"/>
+    <sprite n="butterfly_04_02.png" x="30" y="225" w="30" h="25"/>
+    <sprite n="butterfly_04_03.png" x="60" y="225" w="30" h="25"/>
+    <sprite n="butterfly_04_04.png" x="90" y="225" w="30" h="25"/>
+    <sprite n="butterfly_04_05.png" x="0" y="250" w="30" h="25"/>
+    <sprite n="butterfly_04_06.png" x="30" y="250" w="30" h="25"/>
+    <sprite n="butterfly_04_07.png" x="60" y="250" w="30" h="25"/>
+    <sprite n="butterfly_04_08.png" x="90" y="250" w="30" h="25"/>
+    <sprite n="butterfly_04_09.png" x="0" y="275" w="30" h="25"/>
+    <sprite n="butterfly_04_10.png" x="30" y="275" w="30" h="25"/>
+    <sprite n="butterfly_04_11.png" x="60" y="275" w="30" h="25"/>
+    <sprite n="butterfly_04_12.png" x="90" y="275" w="30" h="25"/>
+    <sprite n="butterfly_05_01.png" x="0" y="300" w="30" h="25"/>
+    <sprite n="butterfly_05_02.png" x="30" y="300" w="30" h="25"/>
+    <sprite n="butterfly_05_03.png" x="60" y="300" w="30" h="25"/>
+    <sprite n="butterfly_05_04.png" x="90" y="300" w="30" h="25"/>
+    <sprite n="butterfly_05_05.png" x="0" y="325" w="30" h="25"/>
+    <sprite n="butterfly_05_06.png" x="30" y="325" w="30" h="25"/>
+    <sprite n="butterfly_05_07.png" x="60" y="325" w="30" h="25"/>
+    <sprite n="butterfly_05_08.png" x="90" y="325" w="30" h="25"/>
+    <sprite n="butterfly_05_09.png" x="0" y="350" w="30" h="25"/>
+    <sprite n="butterfly_05_10.png" x="30" y="350" w="30" h="25"/>
+    <sprite n="butterfly_05_11.png" x="60" y="350" w="30" h="25"/>
+    <sprite n="butterfly_05_12.png" x="90" y="350" w="30" h="25"/>
+    <sprite n="butterfly_06_01.png" x="0" y="375" w="30" h="25"/>
+    <sprite n="butterfly_06_02.png" x="30" y="375" w="30" h="25"/>
+    <sprite n="butterfly_06_03.png" x="60" y="375" w="30" h="25"/>
+    <sprite n="butterfly_06_04.png" x="90" y="375" w="30" h="25"/>
+    <sprite n="butterfly_06_05.png" x="0" y="400" w="30" h="25"/>
+    <sprite n="butterfly_06_06.png" x="30" y="400" w="30" h="25"/>
+    <sprite n="butterfly_06_07.png" x="60" y="400" w="30" h="25"/>
+    <sprite n="butterfly_06_08.png" x="90" y="400" w="30" h="25"/>
+    <sprite n="butterfly_06_09.png" x="0" y="425" w="30" h="25"/>
+    <sprite n="butterfly_06_10.png" x="30" y="425" w="30" h="25"/>
+    <sprite n="butterfly_06_11.png" x="60" y="425" w="30" h="25"/>
+    <sprite n="butterfly_06_12.png" x="90" y="425" w="30" h="25"/>
+    <sprite n="butterfly_07_01.png" x="0" y="450" w="30" h="25"/>
+    <sprite n="butterfly_07_02.png" x="30" y="450" w="30" h="25"/>
+    <sprite n="butterfly_07_03.png" x="60" y="450" w="30" h="25"/>
+    <sprite n="butterfly_07_04.png" x="90" y="450" w="30" h="25"/>
+    <sprite n="butterfly_07_05.png" x="0" y="475" w="30" h="25"/>
+    <sprite n="butterfly_07_06.png" x="30" y="475" w="30" h="25"/>
+    <sprite n="butterfly_07_07.png" x="60" y="475" w="30" h="25"/>
+    <sprite n="butterfly_07_08.png" x="90" y="475" w="30" h="25"/>
+    <sprite n="butterfly_07_09.png" x="0" y="500" w="30" h="25"/>
+    <sprite n="butterfly_07_10.png" x="30" y="500" w="30" h="25"/>
+    <sprite n="butterfly_07_11.png" x="60" y="500" w="30" h="25"/>
+    <sprite n="butterfly_07_12.png" x="90" y="500" w="30" h="25"/>
+    <sprite n="butterfly_08_01.png" x="0" y="525" w="30" h="25"/>
+    <sprite n="butterfly_08_02.png" x="30" y="525" w="30" h="25"/>
+    <sprite n="butterfly_08_03.png" x="60" y="525" w="30" h="25"/>
+    <sprite n="butterfly_08_04.png" x="90" y="525" w="30" h="25"/>
+    <sprite n="butterfly_08_05.png" x="0" y="550" w="30" h="25"/>
+    <sprite n="butterfly_08_06.png" x="30" y="550" w="30" h="25"/>
+    <sprite n="butterfly_08_07.png" x="60" y="550" w="30" h="25"/>
+    <sprite n="butterfly_08_08.png" x="90" y="550" w="30" h="25"/>
+    <sprite n="butterfly_08_09.png" x="0" y="575" w="30" h="25"/>
+    <sprite n="butterfly_08_10.png" x="30" y="575" w="30" h="25"/>
+    <sprite n="butterfly_08_11.png" x="60" y="575" w="30" h="25"/>
+    <sprite n="butterfly_08_12.png" x="90" y="575" w="30" h="25"/>
+    <sprite n="butterfly_09_01.png" x="0" y="600" w="30" h="25"/>
+    <sprite n="butterfly_09_02.png" x="30" y="600" w="30" h="25"/>
+    <sprite n="butterfly_09_03.png" x="60" y="600" w="30" h="25"/>
+    <sprite n="butterfly_09_04.png" x="90" y="600" w="30" h="25"/>
+    <sprite n="butterfly_09_05.png" x="0" y="625" w="30" h="25"/>
+    <sprite n="butterfly_09_06.png" x="30" y="625" w="30" h="25"/>
+    <sprite n="butterfly_09_07.png" x="60" y="625" w="30" h="25"/>
+    <sprite n="butterfly_09_08.png" x="90" y="625" w="30" h="25"/>
+    <sprite n="butterfly_09_09.png" x="0" y="650" w="30" h="25"/>
+    <sprite n="butterfly_09_10.png" x="30" y="650" w="30" h="25"/>
+    <sprite n="butterfly_09_11.png" x="60" y="650" w="30" h="25"/>
+    <sprite n="butterfly_09_12.png" x="90" y="650" w="30" h="25"/>
+    <sprite n="butterfly_10_01.png" x="0" y="675" w="30" h="25"/>
+    <sprite n="butterfly_10_02.png" x="30" y="675" w="30" h="25"/>
+    <sprite n="butterfly_10_03.png" x="60" y="675" w="30" h="25"/>
+    <sprite n="butterfly_10_04.png" x="90" y="675" w="30" h="25"/>
+    <sprite n="butterfly_10_05.png" x="0" y="700" w="30" h="25"/>
+    <sprite n="butterfly_10_06.png" x="30" y="700" w="30" h="25"/>
+    <sprite n="butterfly_10_07.png" x="60" y="700" w="30" h="25"/>
+    <sprite n="butterfly_10_08.png" x="90" y="700" w="30" h="25"/>
+    <sprite n="butterfly_10_09.png" x="0" y="725" w="30" h="25"/>
+    <sprite n="butterfly_10_10.png" x="30" y="725" w="30" h="25"/>
+    <sprite n="butterfly_10_11.png" x="60" y="725" w="30" h="25"/>
+    <sprite n="butterfly_10_12.png" x="90" y="725" w="30" h="25"/>
+</TextureAtlas>

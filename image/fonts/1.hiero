@@ -1,0 +1,27 @@
+font.name=Suruma
+font.size=18
+font.bold=false
+font.italic=false
+font.gamma=1.8
+font.mono=false
+
+font2.file=/home/ren/微软雅黑+Arial.ttf
+font2.use=true
+
+pad.top=1
+pad.right=1
+pad.bottom=1
+pad.left=1
+pad.advance.x=-2
+pad.advance.y=-2
+
+glyph.native.rendering=false
+glyph.page.width=512
+glyph.page.height=512
+glyph.text=收获 战斗 铲除 无\nmade by 任小牛*_*\n白萝卜,非常常见的蔬菜，略带辛辣 \n红萝卜,营养丰富，大自然的宝石,\n玉米,分布最广粮食作物,\n土豆,含有大量淀粉和蛋白质,\n茄子,拍照的最佳拍档,\n番茄,含有丰富的胡萝卜素,\n豌豆,富含人体需要的各种营养物质,\n辣椒,味道爽口刺激\n南瓜,含有多种营养成分，味道香甜\n草莓,果肉多多，酸甜可口\n西瓜,全身是宝，果皮还能使用\n香蕉,快乐水果，减肥果实\n桃子,味道甜美，营养丰富\n菠萝,香甜可口，但存在副作用 \n樱桃,可用作酿酒，可以抗贫血\n1234567890()[]/:\n第 季 小时 分钟 秒后成熟 已枯萎\n经验 金币 等级：\n需求等级：经验：季数： 预计产量：
+
+render_type=0
+
+effect.class=com.badlogic.gdx.tools.hiero.unicodefont.effects.ColorEffect
+effect.Color=ffffff
+
