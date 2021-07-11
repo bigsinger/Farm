@@ -1,0 +1,1 @@
+cocos creator 2.4.5可以打开

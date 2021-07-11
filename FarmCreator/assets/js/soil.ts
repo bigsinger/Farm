@@ -28,7 +28,7 @@ export default class NewClass extends cc.Component {
  
         for(let i = 0;i < layerSize.width;i++){
             for (let j = 0; j < 2; j++) {   //layerSize.height
-                layer.setTileGID(5, i, j, 1)
+                layer.setTileGIDAt(5, i, j, 1)
                 let gid = layer.getTileGIDAt(i,j);
                 let crop:Crop = new Crop(this.cropAtlas.getSpriteFrame('crop_101_04'))
                 let pos: cc.Vec2 = this.getReleasePos(i, j)
@@ -57,7 +57,7 @@ export default class NewClass extends cc.Component {
         var posY:number = mapPixHeight/2 - (cellX + cellY) * cellHeight / 2;
         //减去瓦片地图的锚点对应坐标系的位置
         posY -= cellHeight / 2 / 2;
-        return cc.p(posX,posY);
+        return cc.Vec2(posX,posY);
     },
 
     //将像素坐标转化为瓦片坐标
@@ -66,7 +66,7 @@ export default class NewClass extends cc.Component {
     //     var tileSize = this.tiledMap.getTileSize();
     //     var x = Math.floor(posInPixel.x / tileSize.width);
     //     var y = Math.floor((mapSize.height - posInPixel.y) / tileSize.height);
-    //     return cc.p(x, y);
+    //     return cc.Vec2(x, y);
     // },
     // update (dt) {}
 }

@@ -1,0 +1,36 @@
+{
+  "ver": "2.3.5",
+  "uuid": "b4f23a24-76fd-4795-9ccc-9f3e1ae75deb",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 1005,
+  "height": 106,
+  "platformSettings": {},
+  "subMetas": {
+    "farm_soil_tiles": {
+      "ver": "1.0.4",
+      "uuid": "e12b6a77-16b8-41ca-8f2f-cb7666738c7b",
+      "rawTextureUuid": "b4f23a24-76fd-4795-9ccc-9f3e1ae75deb",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0.5,
+      "offsetY": -0.5,
+      "trimX": 1,
+      "trimY": 2,
+      "width": 1004,
+      "height": 103,
+      "rawWidth": 1005,
+      "rawHeight": 106,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
