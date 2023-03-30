@@ -1,0 +1,24 @@
+{
+  "__type__": "cc.SpriteAtlas",
+  "content": {
+    "name": "yanhua0",
+    "spriteFrames": [
+      "yanhua_01",
+      "487daf06-c0a1-4035-99e5-e97ee4c329e1@5a7f3",
+      "yanhua_02",
+      "487daf06-c0a1-4035-99e5-e97ee4c329e1@07a26",
+      "yanhua_03",
+      "487daf06-c0a1-4035-99e5-e97ee4c329e1@3d3f9",
+      "yanhua_04",
+      "487daf06-c0a1-4035-99e5-e97ee4c329e1@bbc96",
+      "yanhua_05",
+      "487daf06-c0a1-4035-99e5-e97ee4c329e1@22867",
+      "yanhua_06",
+      "487daf06-c0a1-4035-99e5-e97ee4c329e1@9a52f",
+      "yanhua_07",
+      "487daf06-c0a1-4035-99e5-e97ee4c329e1@7adef",
+      "yanhua_09",
+      "487daf06-c0a1-4035-99e5-e97ee4c329e1@c8e31"
+    ]
+  }
+}

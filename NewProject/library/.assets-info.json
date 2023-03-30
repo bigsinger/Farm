@@ -1,0 +1,274 @@
+{
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\animation": {
+    "time": 1680087292329.6172,
+    "uuid": "273a8081-e368-4a5c-be6b-e8dd54dcb434",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\bird": {
+    "time": 1680087292438.0078,
+    "uuid": "1409b620-b03e-43ff-b40c-eb4a71fa4c23",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\js": {
+    "time": 1680146040461.5452,
+    "uuid": "6fb76ed0-e3f5-4e55-b882-3b774d8c1fbc",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\resources": {
+    "time": 1680087297537.5872,
+    "uuid": "662f4df3-02fb-425d-bbd3-000a3cfc621e",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\sanguo": {
+    "time": 1680087292522.9656,
+    "uuid": "d5887411-1402-4cff-9007-f0a717731716",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\scene": {
+    "time": 1680087292550.8516,
+    "uuid": "4dcac118-0fce-4d64-bd52-6a0b4ca42b04",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\resources\\crop": {
+    "time": 1680087292497.5757,
+    "uuid": "dccca2ba-90f8-436e-8fb7-9b7b51b5f624",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\js\\bird.ts": {
+    "time": 1680090951106.3374,
+    "uuid": "2c1ac378-feb0-453a-b2f6-729dc9fa4d8e",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\js\\brand.ts": {
+    "time": 1680145345526.752,
+    "uuid": "e896e036-f1ee-4217-9129-cd9002059700",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\js\\cloud.ts": {
+    "time": 1680145991289.8079,
+    "uuid": "5276ba22-78ff-4ef7-8476-dabdf725f9c8",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\js\\Crop.ts": {
+    "time": 1680145777260.1475,
+    "uuid": "d05b08c7-7c76-41b7-bdf1-2e4f8337a751",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\js\\global.d.ts": {
+    "time": 1626777496960.0657,
+    "uuid": "96c585ad-155b-477f-9b9d-a23e7a0f8855",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\js\\kuojian.ts": {
+    "time": 1680091409653.781,
+    "uuid": "f71812f7-3ea3-46c6-9e84-6afc89d53d70",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\js\\soil.ts": {
+    "time": 1680145663389.7031,
+    "uuid": "83382618-ec98-44cf-b3f1-d43a2f7dd4bc",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\js\\yanhua.ts": {
+    "time": 1680092200130.0908,
+    "uuid": "bd20b911-3510-4d66-94b5-12513b2dfe6e",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\animation.meta": {
+    "time": 1680087297542.469
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\bird.meta": {
+    "time": 1680087297543.4443
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\js.meta": {
+    "time": 1680087297543.4443
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\resources.meta": {
+    "time": 1680087297544.4204
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\sanguo.meta": {
+    "time": 1680087297544.4204
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\scene.meta": {
+    "time": 1680087297545.397
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\resources\\crop.meta": {
+    "time": 1680087297546.3743
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\js\\global.d.ts.meta": {
+    "time": 1680087297550.281
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\js\\bird.ts.meta": {
+    "time": 1680087297552.235
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\js\\brand.ts.meta": {
+    "time": 1680087297553.2114
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\js\\cloud.ts.meta": {
+    "time": 1680087297554.1873
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\js\\Crop.ts.meta": {
+    "time": 1680087297555.1624
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\js\\kuojian.ts.meta": {
+    "time": 1680087297556.1394
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\js\\soil.ts.meta": {
+    "time": 1680087297557.1162
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\js\\yanhua.ts.meta": {
+    "time": 1680087297557.1162
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\cloud3.png": {
+    "time": 1626777496943.1108,
+    "uuid": "89087683-ba41-4061-820c-64d246371cef",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\farm.tmx": {
+    "time": 1626777496943.1108,
+    "uuid": "e6205683-5be2-4cb2-bb7a-87c38c89a4b9",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\farm_bg01.png": {
+    "time": 1626777496948.0974,
+    "uuid": "cf371d6d-f66f-47a7-bc07-e2b665cabed3",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\farm_soil_tiles.png": {
+    "time": 1626777496950.0925,
+    "uuid": "b4f23a24-76fd-4795-9ccc-9f3e1ae75deb",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\farm_soil_tiles.tsx": {
+    "time": 1626777496951.0896,
+    "uuid": "cfe66810-f628-4bb9-b767-8e1bdf527c8a",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\farm_ui_res.plist": {
+    "time": 1626777496951.0896,
+    "uuid": "4715b3f4-adc7-4944-842e-55fce8ffaab6",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\farm_ui_res.png": {
+    "time": 1626777496953.084,
+    "uuid": "ec45a7f6-93df-4bac-8482-10f84454cdaa",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\yanhua.anim": {
+    "time": 1680087298461.75,
+    "uuid": "5ccf7b83-3116-4b5f-8814-781db38c8d2d",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\animation\\yanhua0.plist": {
+    "time": 1626777496924.1619,
+    "uuid": "487daf06-c0a1-4035-99e5-e97ee4c329e1",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\animation\\yanhua0.png": {
+    "time": 1626777496932.14,
+    "uuid": "fb6360c7-34b3-437a-bda0-7f26e5b4e84e",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\animation\\yanhua1.plist": {
+    "time": 1626777496933.1375,
+    "uuid": "682f5988-c636-46a7-adb9-290f5b618a18",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\animation\\yanhua1.png": {
+    "time": 1626777496935.1318,
+    "uuid": "d331af6a-eb3b-46c0-92bc-b16c6388b4e7",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\bird\\bird.plist": {
+    "time": 1626777496938.125,
+    "uuid": "bbc1c365-f814-4e71-8e86-328cb759a9cf",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\bird\\bird.png": {
+    "time": 1626777496941.1167,
+    "uuid": "fc008e25-0cb9-4ce1-b397-eca78a262d64",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\sanguo\\res_1.plist": {
+    "time": 1626777496977.0212,
+    "uuid": "cec4125d-15d1-4d0a-88a0-dd70d66510b9",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\sanguo\\res_1.png": {
+    "time": 1626777497006.9429,
+    "uuid": "2a8a2bd2-b708-4d70-8171-132357e1ce2f",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\scene\\farm.scene": {
+    "time": 1680146097851.0986,
+    "uuid": "b387bb2f-d11b-40c6-b191-3c2020931d22",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\resources\\crop\\crop.plist": {
+    "time": 1626777496968.0442,
+    "uuid": "43768549-573d-43f7-a2a9-c3a49ca4eb5a",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\resources\\crop\\crop.png": {
+    "time": 1626777496974.0295,
+    "uuid": "faee1ea0-f08a-421b-b1ba-c2aff27165a9",
+    "missing": false
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\farm_soil_tiles.tsx.meta": {
+    "time": 1680087298416.8328
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\farm.tmx.meta": {
+    "time": 1680087298428.5496
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\farm_ui_res.png.meta": {
+    "time": 1680087298437.3406
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\farm_soil_tiles.png.meta": {
+    "time": 1680087298447.103
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\cloud3.png.meta": {
+    "time": 1680087298449.0566
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\farm_bg01.png.meta": {
+    "time": 1680087298457.8445
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\animation\\yanhua0.png.meta": {
+    "time": 1680087298467.6091
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\yanhua.anim.meta": {
+    "time": 1680087298468.586
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\animation\\yanhua1.plist.meta": {
+    "time": 1680087298502.765
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\animation\\yanhua1.png.meta": {
+    "time": 1680087298508.6216
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\animation\\yanhua0.plist.meta": {
+    "time": 1680087298514.4807
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\bird\\bird.png.meta": {
+    "time": 1680087298521.3162
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\farm_ui_res.plist.meta": {
+    "time": 1680087298537.5146
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\scene\\farm.scene.meta": {
+    "time": 1680087298567.784
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\sanguo\\res_1.png.meta": {
+    "time": 1680087298573.6455
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\resources\\crop\\crop.png.meta": {
+    "time": 1680087298578.5242
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\sanguo\\res_1.plist.meta": {
+    "time": 1680087298649.8086
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\resources\\crop\\crop.plist.meta": {
+    "time": 1680087298689.8447
+  },
+  "F:\\bigsinger\\Farm\\NewProject\\assets\\bird\\bird.plist.meta": {
+    "time": 1680087298733.7856
+  }
+}

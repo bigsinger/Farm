@@ -1,0 +1,26 @@
+{
+  "path": {
+    "F:\\bigsinger\\Farm\\NewProject\\assets\\farm.tmx": [
+      "F:\\bigsinger\\Farm\\NewProject\\assets\\farm_soil_tiles.tsx",
+      "F:\\bigsinger\\Farm\\NewProject\\assets\\farm_soil_tiles.png"
+    ],
+    "F:\\bigsinger\\Farm\\NewProject\\assets\\animation\\yanhua1.plist": [
+      "F:\\bigsinger\\Farm\\NewProject\\assets\\animation\\yanhua1.png"
+    ],
+    "F:\\bigsinger\\Farm\\NewProject\\assets\\animation\\yanhua0.plist": [
+      "F:\\bigsinger\\Farm\\NewProject\\assets\\animation\\yanhua0.png"
+    ],
+    "F:\\bigsinger\\Farm\\NewProject\\assets\\farm_ui_res.plist": [
+      "F:\\bigsinger\\Farm\\NewProject\\assets\\farm_ui_res.png"
+    ],
+    "F:\\bigsinger\\Farm\\NewProject\\assets\\sanguo\\res_1.plist": [
+      "F:\\bigsinger\\Farm\\NewProject\\assets\\sanguo\\res_1.png"
+    ],
+    "F:\\bigsinger\\Farm\\NewProject\\assets\\resources\\crop\\crop.plist": [
+      "F:\\bigsinger\\Farm\\NewProject\\assets\\resources\\crop\\crop.png"
+    ],
+    "F:\\bigsinger\\Farm\\NewProject\\assets\\bird\\bird.plist": [
+      "F:\\bigsinger\\Farm\\NewProject\\assets\\bird\\bird.png"
+    ]
+  }
+}

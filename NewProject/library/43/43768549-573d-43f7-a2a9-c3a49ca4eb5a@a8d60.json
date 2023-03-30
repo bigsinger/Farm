@@ -1,0 +1,52 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "crop_end",
+    "atlas": "43768549-573d-43f7-a2a9-c3a49ca4eb5a",
+    "rect": {
+      "x": 2,
+      "y": 212,
+      "width": 125,
+      "height": 57
+    },
+    "offset": {
+      "x": -1,
+      "y": 1
+    },
+    "originalSize": {
+      "width": 201,
+      "height": 103
+    },
+    "rotated": false,
+    "capInsets": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertices": {
+      "rawPosition": [],
+      "indexes": [],
+      "uv": [],
+      "nuv": [],
+      "minPos": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "maxPos": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    "texture": "faee1ea0-f08a-421b-b1ba-c2aff27165a9@6c48a",
+    "packable": true,
+    "pixelsToUnit": 100,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "meshType": 0
+  }
+}
