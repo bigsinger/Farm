@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="isometric" renderorder="right-down" width="3" height="6" tilewidth="201" tileheight="106" nextobjectid="1">
- <tileset firstgid="1" source="farm_soil_tiles.tsx"/>
- <layer name="soil layer" width="3" height="6">
-  <data encoding="base64" compression="zlib">
-   eJxjZGBgYKQCBgAC9AAT
-  </data>
- </layer>
-</map>

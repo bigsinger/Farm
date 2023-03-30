@@ -3,30 +3,31 @@ const { ccclass, property } = _decorator;
 
 @ccclass('YanHua')
 export default class YanHua extends Component {
+    @property(AnimationClip)
+    public yanhuaClip: AnimationClip = null;
 
-    // onLoad() {}
+    private loopCount: number = 0;
+    private maxLoopCount: number = 3;
 
     public start() {
         const uiOpacity = this.node.getComponent(UIOpacity) || this.node.addComponent(UIOpacity);
         uiOpacity.opacity = 255;
         const anim: Animation = this.getComponent(Animation);
-        // Register the callback for the animation end
-        anim.on(Animation.EventType.FINISHED, () => { uiOpacity.opacity = 0 }, this);
 
-        // Play the animation with loop count
-        this.playAnimationWithLoop(anim, "yanhua", 3); // Play the animation 3 times
-    }
-
-    // Custom method to play animation with loop count
-    private playAnimationWithLoop(anim: Animation, animationName: string, loopCount: number) {
-        let state: AnimationState = anim.getState(animationName);
-
-        if (state) {
-            state.wrapMode = AnimationClip.WrapMode.Loop;
-            state.duration = state.duration / loopCount;
-            anim.play(animationName);
+        if (this.yanhuaClip) {
+            this.yanhuaClip.wrapMode = AnimationClip.WrapMode.Loop;
         }
-    }
 
-    // update(dt) {}
+        anim.on(Animation.EventType.FINISHED, () => {
+            this.loopCount++;
+            console.log("烟花播放 ", this.loopCount, " 次");
+            if (this.loopCount >= this.maxLoopCount) {
+                uiOpacity.opacity = 0;
+                anim.stop();
+                console.log("烟花播放次数达到，停止播放");
+            }
+        }, this);
+
+        anim.play("yanhua"); // 播放动画
+    }
 }

@@ -6,15 +6,18 @@ export class Crop extends Node {
     public mButton: Button;
     private mSprite: Sprite;
 
-    setParent(p:any){
-        self.parent = p;
-    } 
+    public cellX: number;
+    public cellY: number;
 
     constructor(spriteFrame: SpriteFrame) {
         super();
 
         var self = this;
-        director.getScene().addChild(this);
+        self.on(Node.EventType.TOUCH_START, function (event) {
+            console.log(`Crop TOUCH_START tile: (${self.cellX}, ${self.cellY}) ; xyz: (${self.position.x}, ${self.position.y}, ${self.position.z})`);
+        });
+
+        //director.getScene().addChild(this);
 
         self.mSprite = self.addComponent(Sprite);
         self.mSprite.spriteFrame = spriteFrame;
@@ -24,5 +27,10 @@ export class Crop extends Node {
 
         this.mButton = this.addComponent(Button);
         this.mButton.transition = Button.Transition.SCALE;
+    }
+
+    public setCellPosition(x:number, y:number){
+        this.cellX = x;
+        this.cellY = y;
     }
 }
