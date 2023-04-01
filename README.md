@@ -1,7 +1,7 @@
 # Farm
-cocos制作的农场游戏demo源码 一个cocos2dxC++版本 一个cocos creator版本
+`cocos`制作的农场游戏`demo`源码 一个`cocos2dx`C++版本一个`cocos creator`版本，Cocos Creator编辑器的使用可以记录在这里：[Cocos Creator使用汇总备查](https://zhupite.com/program/cocos-creator-summary.html)，不会用的可以参考。
 
-我不是搞这行的，所以出了demo就不打算搞下去了，没意思，发出来给有兴趣的人参考吧。写了一些总结，权当参考：[cocos编写农场偷菜小游戏的总结](https://blog.csdn.net/asmcvc/article/details/105641708)
+我不是搞这行的，所以出了demo就不打算搞下去了，发出来给有兴趣的人参考吧。写了一些总结，权当参考：[cocos编写农场偷菜小游戏的总结](https://blog.csdn.net/asmcvc/article/details/105641708)
 
 碎图及资源文件有一部分使用了[SDL农场游戏开发](https://github.com/sky94520/Farm/tree/Farm-09)里的资源，有一部分是从老版本的率土之滨里扒出来的资源，以上资源均是学习研究使用，均没有做其他目的使用，如果侵权请告知，会在第一时间删除。
 
@@ -9,7 +9,15 @@ cocos制作的农场游戏demo源码 一个cocos2dxC++版本 一个cocos creator
 
 ## Cocos Creator版本
 
-**2023年3月31日补充**：已经转换成了`Cocos Creator 3.7.2`版本，解决了部分因为版本不同导致的问题，可以运行，能出一部分效果，但是还有一些问题，等以后有问题了再看。再说下感受：
+**2023年4月1日补充**：
+
+上次使用新版本转换后的工程一堆问题，调整花费时间较长，索性新建工程重新实现，发现速度还快一些，这也间接说明新老版本的兼容及转换问题真是令人头疼。
+
+
+
+**2023年3月31日补充**：
+
+已经转换成了`Cocos Creator 3.7.2`版本，解决了部分因为版本不同导致的问题，可以运行，能出一部分效果，但是还有一些问题，等以后有问题了再看。再说下感受：
 
 1. 版本之间兼容很差，虽然官网提供了插件进行转换（[cocos/cocos-plugin-import-2.x: plugin for migrating cocos creator 2.x projects.](https://github.com/cocos/cocos-plugin-import-2.x)）但还是会有很多问题的，需要手动修改，所幸是有ChatGPT，否则我是没动力。
 2. 编辑器的使用有一些变化，没之前好用，之前看过教程会用了，现在升级到新版本又不会用了。
