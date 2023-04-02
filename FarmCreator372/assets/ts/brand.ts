@@ -6,7 +6,7 @@ export class Brand extends Component {
     private self: Brand = null;
 
     @property({ type: Node })
-    yanhua: Node = null;
+    fireworks: Node = null;
 
     onLoad() {
         this.self = this;
@@ -14,21 +14,16 @@ export class Brand extends Component {
     }
 
     onTouchStart(event: Event) {
-        const uiOpacity = this.yanhua.getComponent(UIOpacity);
+        const uiOpacity = this.fireworks.getComponent(UIOpacity);
         if (uiOpacity) {
             uiOpacity.opacity = 255;
         }
-        this.yanhua.active = true;
-        const anim : Animation = this.yanhua.getComponent(Animation);
+        this.fireworks.active = true;
+        const anim : Animation = this.fireworks.getComponent(Animation);
         anim.on(Animation.EventType.FINISHED, () => {
-            this.yanhua.active = false;
+            this.fireworks.active = false;
         }, this);
 
-        const clipName = 'yanhua';
-        const state = anim.play(clipName);
-
-        // 使用 wrapMode 和 repeatCount 实现循环播放
-        // state.wrapMode = AnimationClip.WrapMode.Loop;
-        // state.repeatCount = 3;
+        const state = anim.play('fireworks');
     }
 }

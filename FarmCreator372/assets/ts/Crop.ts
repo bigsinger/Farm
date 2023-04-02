@@ -19,6 +19,10 @@ export class Crop extends Node {
 
         //director.getScene().addChild(this);
 
+        // 设置精灵节点的锚点为中下角
+        //this.addComponent(UITransform).setAnchorPoint(0.5, 0);
+
+
         this.layer = Layers.Enum.UI_2D;
         self.mSprite = self.addComponent(Sprite);
         self.mSprite.spriteFrame = spriteFrame;

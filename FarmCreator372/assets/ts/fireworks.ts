@@ -1,10 +1,10 @@
 import { _decorator, Component, Node, Animation, UIOpacity, AnimationClip, AnimationState } from 'cc';
 const { ccclass, property } = _decorator;
 
-@ccclass('YanHua')
-export default class YanHua extends Component {
+@ccclass('Fireworks')
+export default class Fireworks extends Component {
     @property(AnimationClip)
-    public yanhuaClip: AnimationClip = null;
+    public fireworksClip: AnimationClip = null;
 
     private loopCount: number = 0;
     private maxLoopCount: number = 3;
@@ -14,8 +14,8 @@ export default class YanHua extends Component {
         uiOpacity.opacity = 255;
         const anim: Animation = this.getComponent(Animation);
 
-        if (this.yanhuaClip) {
-            this.yanhuaClip.wrapMode = AnimationClip.WrapMode.Loop;
+        if (this.fireworksClip) {
+            this.fireworksClip.wrapMode = AnimationClip.WrapMode.Loop;
         }
 
         anim.on(Animation.EventType.FINISHED, () => {
@@ -23,6 +23,7 @@ export default class YanHua extends Component {
             console.log("烟花播放 ", this.loopCount, " 次");
             if (this.loopCount >= this.maxLoopCount) {
                 uiOpacity.opacity = 0;
+                this.loopCount = 0;
                 anim.stop();
                 console.log("烟花播放次数达到，停止播放");
             }else{
