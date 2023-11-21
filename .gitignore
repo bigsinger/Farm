@@ -1,8 +1,6 @@
-/NewProject/library
-/NewProject/temp
-/FarmCreator372/.creator
-/FarmCreator372/temp
-/FarmCreator372/library
+/FarmCreator3x/.creator
+/FarmCreator3x/temp
+/FarmCreator3x/library
 **/*.meta
 *.meta
 FarmCreator372/profiles/v2/packages/scene.json
