@@ -1,0 +1,8 @@
+{
+  "__type__": "cc.TextAsset",
+  "_name": "farm_soil_tiles",
+  "_objFlags": 0,
+  "__editorExtras__": {},
+  "_native": "",
+  "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<tileset name=\"farm_soil_tiles\" tilewidth=\"201\" tileheight=\"102\" tilecount=\"5\" columns=\"5\">\r\n <image source=\"farm_soil_tiles.png\" width=\"1005\" height=\"106\"/>\r\n</tileset>\r\n"
+}

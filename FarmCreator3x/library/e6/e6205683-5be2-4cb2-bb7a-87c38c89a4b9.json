@@ -1,0 +1,35 @@
+{
+  "__type__": "cc.TiledMapAsset",
+  "_name": "farm",
+  "_objFlags": 0,
+  "__editorExtras__": {},
+  "_native": "",
+  "tmxXmlStr": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<map version=\"1.10\" tiledversion=\"1.10.0\" orientation=\"isometric\" renderorder=\"left-down\" width=\"3\" height=\"6\" tilewidth=\"201\" tileheight=\"106\" infinite=\"0\" nextlayerid=\"4\" nextobjectid=\"1\">\r\n <tileset firstgid=\"1\" source=\"farm_soil_tiles.tsx\"/>\r\n <layer id=\"1\" name=\"virginLayer\" width=\"3\" height=\"6\">\r\n  <data encoding=\"csv\">\r\n1,1,1,\r\n1,1,1,\r\n1,1,1,\r\n1,1,1,\r\n1,1,1,\r\n1,1,1\r\n</data>\r\n </layer>\r\n <layer id=\"2\" name=\"soilLayer\" width=\"3\" height=\"6\">\r\n  <data encoding=\"csv\">\r\n5,5,5,\r\n5,5,5,\r\n5,5,5,\r\n5,5,5,\r\n5,5,5,\r\n5,5,5\r\n</data>\r\n </layer>\r\n <objectgroup id=\"3\" name=\"cropLayer\"/>\r\n</map>\r\n",
+  "tsxFiles": [
+    {
+      "__uuid__": "cfe66810-f628-4bb9-b767-8e1bdf527c8a",
+      "__expectedType__": "cc.TextAsset"
+    }
+  ],
+  "tsxFileNames": [
+    "farm_soil_tiles.tsx"
+  ],
+  "spriteFrames": [
+    {
+      "__uuid__": "b4f23a24-76fd-4795-9ccc-9f3e1ae75deb@f9941",
+      "__expectedType__": "cc.SpriteFrame"
+    }
+  ],
+  "imageLayerSpriteFrame": [],
+  "imageLayerSpriteFrameNames": [],
+  "spriteFrameNames": [
+    "farm_soil_tiles.png"
+  ],
+  "spriteFrameSizes": [
+    {
+      "__type__": "cc.Size",
+      "width": 1005,
+      "height": 106
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "path": {
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\map\\farm.tmx": [
+      "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\map\\farm_soil_tiles.tsx",
+      "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\map\\farm_soil_tiles.png"
+    ],
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\farmUI\\farm_ui_res.plist": [
+      "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\farmUI\\farm_ui_res.png"
+    ],
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\crop\\crop.plist": [
+      "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\crop\\crop.png"
+    ],
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\sanguo\\res_1.plist": [
+      "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\sanguo\\res_1.png"
+    ],
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\bird\\bird.plist": [
+      "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\bird\\bird.png"
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+2023-11-21 19:40:30 - log: error Error: EEXIST: file already exists, symlink 'C:\ProgramData\cocos\editors\Creator\3.8.1\resources\resources\3d\engine\native' -> 'C:\ProgramData\cocos\editors\Creator\3.8.1\resources\resources\3d\engine-native'
+    at symlinkSync (fs.js:1169:3)
+    at createSymlink (C:\ProgramData\cocos\editors\Creator\3.8.1\resources\app.asar\builtin\engine\dist\browser\index.ccc:1:7343)
+    at Package.load (C:\ProgramData\cocos\editors\Creator\3.8.1\resources\app.asar\builtin\engine\dist\browser\index.ccc:1:4261)
+    at Package.execLifeFunc (C:\ProgramData\cocos\editors\Creator\3.8.1\resources\app.asar\node_modules\@editor\package\dist\browser\package.ccc:1:1193)
+    at Package.enable (C:\ProgramData\cocos\editors\Creator\3.8.1\resources\app.asar\node_modules\@editor\package\dist\browser\package.ccc:1:3482)
+    at PackageManager.enable (C:\ProgramData\cocos\editors\Creator\3.8.1\resources\app.asar\node_modules\@editor\package\dist\browser\index.js:1:1763)
+    at Object.<anonymous> (C:\ProgramData\cocos\editors\Creator\3.8.1\resources\app.asar\node_modules\@editor\creator\dist\package\public\browser.ccc:1:2408)
+    at Generator.next (<anonymous>)
+    at i (C:\ProgramData\cocos\editors\Creator\3.8.1\resources\app.asar\node_modules\@editor\creator\dist\package\public\browser.ccc:1:131) {
+  errno: -4075,
+  syscall: 'symlink',
+  code: 'EEXIST',
+  path: 'C:\\ProgramData\\cocos\\editors\\Creator\\3.8.1\\resources\\resources\\3d\\engine\\native',
+  dest: 'C:\\ProgramData\\cocos\\editors\\Creator\\3.8.1\\resources\\resources\\3d\\engine-native'
+}
+2023-11-21 19:40:30 - log: Load engine in C:\ProgramData\cocos\editors\Creator\3.8.1\resources\resources\3d\engine
+2023-11-21 19:40:31 - log: Profile changed: engine (modules.includeModules: 2d,animation,audio,base,dragon-bones,gfx-webgl,gfx-webgl2,intersection-2d,light-probe,particle-2d,physics-2d-box2d,profiler,spine,tiled-map,tween,ui,video,websocket,webview)
+2023-11-21 19:40:31 - log: Register native engine in C:\ProgramData\cocos\editors\Creator\3.8.1\resources\resources\3d\engine\native

@@ -1,0 +1,356 @@
+{
+  "version": "1.0.0",
+  "map": {
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\animation": {
+      "time": 1680503358378.9978,
+      "uuid": "abe02122-ae1f-4083-9f0a-f61a80230424"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\prefab": {
+      "time": 1680503358382.0315,
+      "uuid": "2e5ed5db-ac7f-49e2-bb99-54d58b794734"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources": {
+      "time": 1680503358415.9978,
+      "uuid": "7e63cc46-a1cf-4edc-a880-01fd8b830254"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\ts": {
+      "time": 1680503358437.9976,
+      "uuid": "4d596534-7aa8-499e-9884-70eecacd2e04"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\crop": {
+      "time": 1680503358388.0286,
+      "uuid": "a4c2da93-de76-4976-82ea-182a41bb8011"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect": {
+      "time": 1680503358393.0288,
+      "uuid": "8cbdbe19-611c-4837-b82f-e16bb063bead"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\farmUI": {
+      "time": 1680503358412.9983,
+      "uuid": "73c3b86f-1656-4ca3-b163-6aaa434750e6"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\map": {
+      "time": 1680503358415.9978,
+      "uuid": "4c583146-05aa-46a3-b945-b681ec274163"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\sanguo": {
+      "time": 1680503358433.9973,
+      "uuid": "96986904-76ce-4ca2-8496-2a7b9d63d639"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\bird": {
+      "time": 1680503358392.03,
+      "uuid": "32cbb447-542b-459d-aa55-fe0333939e02"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\cloud": {
+      "time": 1680503358393.0288,
+      "uuid": "4ab35219-1223-4c7e-9762-52b01edce519"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua": {
+      "time": 1680503358407.9973,
+      "uuid": "fe0a0bb0-cb57-4e72-8997-421e75512d19"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\ts\\brand.ts": {
+      "time": 1680503358434.9978,
+      "uuid": "e896e036-f1ee-4217-9129-cd9002059700"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\ts\\cloud.ts": {
+      "time": 1680503358435.9976,
+      "uuid": "5276ba22-78ff-4ef7-8476-dabdf725f9c8"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\ts\\Crop.ts": {
+      "time": 1680503358434.9978,
+      "uuid": "d05b08c7-7c76-41b7-bdf1-2e4f8337a751"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\ts\\fireworks.ts": {
+      "time": 1680503358435.9976,
+      "uuid": "bd20b911-3510-4d66-94b5-12513b2dfe6e"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\ts\\global.d.ts": {
+      "time": 1680503358436.9973,
+      "uuid": "96c585ad-155b-477f-9b9d-a23e7a0f8855"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\ts\\kuojian.ts": {
+      "time": 1680503358436.9973,
+      "uuid": "f71812f7-3ea3-46c6-9e84-6afc89d53d70"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\ts\\soil.ts": {
+      "time": 1680503358437.9976,
+      "uuid": "83382618-ec98-44cf-b3f1-d43a2f7dd4bc"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\animation.meta": {
+      "time": 1700566096391.1792
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\prefab.meta": {
+      "time": 1700566096391.1792
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources.meta": {
+      "time": 1700566096392.1558
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\ts.meta": {
+      "time": 1700566096392.1558
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\crop.meta": {
+      "time": 1700566096393.1316
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect.meta": {
+      "time": 1700566096394.1074
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\farmUI.meta": {
+      "time": 1700566096395.0825
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\map.meta": {
+      "time": 1700566096396.0586
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\sanguo.meta": {
+      "time": 1700566096397.036
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\bird.meta": {
+      "time": 1700566096398.0127
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\cloud.meta": {
+      "time": 1700566096398.9873
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua.meta": {
+      "time": 1700566096399.9636
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\ts\\global.d.ts.meta": {
+      "time": 1680503358436.9973
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\ts\\brand.ts.meta": {
+      "time": 1680503358434.9978
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\ts\\cloud.ts.meta": {
+      "time": 1680503358435.9976
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\ts\\Crop.ts.meta": {
+      "time": 1680503358434.9978
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\ts\\fireworks.ts.meta": {
+      "time": 1680503358436.9973
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\ts\\kuojian.ts.meta": {
+      "time": 1680503358436.9973
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\ts\\soil.ts.meta": {
+      "time": 1680503358437.9976
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\farm.scene": {
+      "time": 1700566102866.993,
+      "uuid": "4a4dad7f-979b-44cb-af2d-3a4bd8eecd1a"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\animation\\bird.anim": {
+      "time": 1680503358377.9978,
+      "uuid": "8f54d992-c6a2-4ee4-b620-fb165fc71cfa"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\animation\\fireworks.anim": {
+      "time": 1680503358378.9978,
+      "uuid": "50ebb277-56fc-4760-bb48-bc28627bfa67"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\prefab\\crop1.prefab": {
+      "time": 1700566102867.9707,
+      "uuid": "ec425ae5-fa05-4d38-8077-3e13b48c86f8"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\prefab\\crop2.prefab": {
+      "time": 1700566102867.9707,
+      "uuid": "b8143010-c11d-464b-99ca-2b09a61a1ca0"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\crop\\crop.plist": {
+      "time": 1680503358383.029,
+      "uuid": "43768549-573d-43f7-a2a9-c3a49ca4eb5a"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\crop\\crop.png": {
+      "time": 1680503358387.0334,
+      "uuid": "faee1ea0-f08a-421b-b1ba-c2aff27165a9"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\farmUI\\farm_bg01.png": {
+      "time": 1680503358410.9988,
+      "uuid": "0bfaae2e-fecd-48a3-9362-db7b72ce4dfe"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\farmUI\\farm_ui_res.plist": {
+      "time": 1680503358411.9988,
+      "uuid": "4715b3f4-adc7-4944-842e-55fce8ffaab6"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\farmUI\\farm_ui_res.png": {
+      "time": 1680503358412.9983,
+      "uuid": "ec45a7f6-93df-4bac-8482-10f84454cdaa"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\map\\farm.tmx": {
+      "time": 1680503358413.9978,
+      "uuid": "e6205683-5be2-4cb2-bb7a-87c38c89a4b9"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\map\\farm_soil_tiles.png": {
+      "time": 1680503358414.9978,
+      "uuid": "b4f23a24-76fd-4795-9ccc-9f3e1ae75deb"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\map\\farm_soil_tiles.tsx": {
+      "time": 1680503358415.9978,
+      "uuid": "cfe66810-f628-4bb9-b767-8e1bdf527c8a"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\sanguo\\res_1.plist": {
+      "time": 1680503358416.9993,
+      "uuid": "cec4125d-15d1-4d0a-88a0-dd70d66510b9"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\sanguo\\res_1.png": {
+      "time": 1680503358432.9988,
+      "uuid": "2a8a2bd2-b708-4d70-8171-132357e1ce2f"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\bird\\bird.plist": {
+      "time": 1680503358389.0261,
+      "uuid": "bbc1c365-f814-4e71-8e86-328cb759a9cf"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\bird\\bird.png": {
+      "time": 1680503358391.0288,
+      "uuid": "fc008e25-0cb9-4ce1-b397-eca78a262d64"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\cloud\\cloud3.png": {
+      "time": 1680503358392.03,
+      "uuid": "4c6179e5-5e17-4815-be3a-d31c7271e57a"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua0.png": {
+      "time": 1680503358397.0408,
+      "uuid": "9b9026a4-27e0-4d90-8506-6b708581e8f5"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua1.png": {
+      "time": 1680503358399.03,
+      "uuid": "a4ce4146-7eac-42a6-97aa-3ffba7e97d7e"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_01.png": {
+      "time": 1680503358399.9985,
+      "uuid": "02bd3f49-1bdc-4f29-b555-ff448d9d5734"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_02.png": {
+      "time": 1680503358399.9985,
+      "uuid": "ad715106-aa1b-4fcd-af4c-846374f494c1"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_03.png": {
+      "time": 1680503358401.0283,
+      "uuid": "221b176e-ff7f-4211-ac7e-780485ae9160"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_04.png": {
+      "time": 1680503358402.0315,
+      "uuid": "a01d9bf2-f81a-479d-bc1f-a4081f4a5ed2"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_05.png": {
+      "time": 1680503358402.9988,
+      "uuid": "64a8f5cf-aeff-40fa-82f5-8a2f29bac2f3"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_06.png": {
+      "time": 1680503358402.9988,
+      "uuid": "2266ecb0-fb86-4dd0-9785-ad4e2f2451ab"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_07.png": {
+      "time": 1680503358404.0288,
+      "uuid": "a6b53089-3452-48c0-acc0-f34c7a10679a"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_09.png": {
+      "time": 1680503358404.9985,
+      "uuid": "74d0f5b5-2731-4b01-b1c4-32b7339a2080"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_10.png": {
+      "time": 1680503358405.9983,
+      "uuid": "0a5364b6-913f-4380-9883-fccc1057f55e"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_11.png": {
+      "time": 1680503358406.998,
+      "uuid": "8f40db2d-a154-47ca-a818-9569d2f545e0"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_12.png": {
+      "time": 1680503358406.998,
+      "uuid": "b5e6c014-a723-447c-8a02-abd8aeea7e28"
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\animation\\bird.anim.meta": {
+      "time": 1680503358378.9978
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\animation\\fireworks.anim.meta": {
+      "time": 1680503358378.9978
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\farm.scene.meta": {
+      "time": 1700566103006.0476
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\prefab\\crop1.prefab.meta": {
+      "time": 1700566103042.666
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\prefab\\crop2.prefab.meta": {
+      "time": 1700566103078.3533
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\farmUI\\farm_ui_res.png.meta": {
+      "time": 1700566103098.9695
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\map\\farm.tmx.meta": {
+      "time": 1680503358413.9978
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\farmUI\\farm_ui_res.plist.meta": {
+      "time": 1700566103189.8225
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\map\\farm_soil_tiles.tsx.meta": {
+      "time": 1700566103197.1658
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\farmUI\\farm_bg01.png.meta": {
+      "time": 1700566103427.6584
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\sanguo\\res_1.png.meta": {
+      "time": 1700566103646.7354
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\map\\farm_soil_tiles.png.meta": {
+      "time": 1700566103714.7695
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\crop\\crop.png.meta": {
+      "time": 1700566103759.711
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\bird\\bird.png.meta": {
+      "time": 1700566103781.6914
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\cloud\\cloud3.png.meta": {
+      "time": 1700566103941.019
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua0.png.meta": {
+      "time": 1700566104029.839
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua1.png.meta": {
+      "time": 1700566104032.768
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\sanguo\\res_1.plist.meta": {
+      "time": 1700566104058.6814
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\crop\\crop.plist.meta": {
+      "time": 1700566104083.0796
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_01.png.meta": {
+      "time": 1700566104089.9126
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_02.png.meta": {
+      "time": 1700566104091.8643
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_03.png.meta": {
+      "time": 1700566104116.264
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_04.png.meta": {
+      "time": 1700566104142.6145
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_05.png.meta": {
+      "time": 1700566104145.5432
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_06.png.meta": {
+      "time": 1700566104149.4475
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_07.png.meta": {
+      "time": 1700566104173.846
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_11.png.meta": {
+      "time": 1700566104198.2466
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_09.png.meta": {
+      "time": 1700566104201.1738
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_10.png.meta": {
+      "time": 1700566104202.15
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\yanhua\\yanhua_12.png.meta": {
+      "time": 1700566104216.7903
+    },
+    "F:\\bigsinger\\Farm\\FarmCreator372\\assets\\resources\\effect\\bird\\bird.plist.meta": {
+      "time": 1700566104319.8093
+    }
+  },
+  "missing": {}
+}
