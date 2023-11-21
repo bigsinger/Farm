@@ -3,3 +3,5 @@
 /FarmCreator372/.creator
 /FarmCreator372/temp
 /FarmCreator372/library
+**/*.meta
+*.meta
