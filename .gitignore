@@ -1,5 +1,4 @@
-/FarmCreator3x/.creator
-/FarmCreator3x/temp
-/FarmCreator3x/library
+**/.creator
+**/temp
+**/library
 **/*.meta
-*.meta
