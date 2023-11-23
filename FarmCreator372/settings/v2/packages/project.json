@@ -1,0 +1,29 @@
+{
+  "__version__": "1.0.4",
+  "layer": [
+    {
+      "name": "backgroundLayer",
+      "value": 1
+    },
+    {
+      "name": "landLayer",
+      "value": 2
+    },
+    {
+      "name": "roleLayer",
+      "value": 8
+    },
+    {
+      "name": "bandLayer",
+      "value": 4
+    },
+    {
+      "name": "weatherLayer",
+      "value": 16
+    },
+    {
+      "name": "effectLayer",
+      "value": 32
+    }
+  ]
+}
