@@ -13,7 +13,7 @@ export class Crop extends Node {
         super();
 
         var self = this;
-        self.on(Node.EventType.TOUCH_START, function (event) {
+        self.on(Node.EventType.TOUCH_START, function () {
             console.log(`Crop TOUCH_START tile: (${self.cellX}, ${self.cellY}) ; xyz: (${self.position.x}, ${self.position.y}, ${self.position.z})`);
         });
 

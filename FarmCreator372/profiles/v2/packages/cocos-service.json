@@ -1,0 +1,19 @@
+{
+  "__version__": "3.0.7",
+  "builder": {
+    "options": {
+      "web-desktop": {
+        "configID": "e3308c",
+        "services": []
+      },
+      "android": {
+        "configID": "e3308c",
+        "services": []
+      }
+    }
+  },
+  "builder-options": {
+    "configID": "e3308c",
+    "services": []
+  }
+}

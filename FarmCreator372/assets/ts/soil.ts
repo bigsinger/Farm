@@ -14,7 +14,7 @@ const landStateFat = 5;
 
 
 @ccclass('Soil')
-export default class Soil extends Component {
+export class Soil extends Component {
     @property(TiledMap)
     mapNode: TiledMap = null;
 

@@ -12,12 +12,12 @@ export default class Fireworks extends Component {
     public start() {
         const uiOpacity = this.node.getComponent(UIOpacity) || this.node.addComponent(UIOpacity);
         uiOpacity.opacity = 255;
-        const anim: Animation = this.getComponent(Animation);
 
         if (this.fireworksClip) {
             this.fireworksClip.wrapMode = AnimationClip.WrapMode.Loop;
         }
 
+        const anim: Animation = this.getComponent(Animation);
         anim.on(Animation.EventType.FINISHED, () => {
             this.loopCount++;
             console.log("烟花播放 ", this.loopCount, " 次");
@@ -25,12 +25,11 @@ export default class Fireworks extends Component {
                 uiOpacity.opacity = 0;
                 this.loopCount = 0;
                 anim.stop();
-                console.log("烟花播放次数达到，停止播放");
             }else{
-                anim.play("fireworks"); // 播放动画
+                anim.play("fireworks"); 
             }
         }, this);
 
-        anim.play("fireworks"); // 播放动画
+        anim.play("fireworks");
     }
 }
