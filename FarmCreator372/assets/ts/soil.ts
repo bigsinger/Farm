@@ -14,7 +14,7 @@ const landStateFatHalf = 4;
 const landStateFat = 5;
 
 // 初始化作物的行数
-const RowOfCrops = 2;
+const YCountOfCrops = 2;
 
 
 @ccclass('Soil')
@@ -35,6 +35,10 @@ export class Soil extends Component {
     @property({ type: Node })
     extendBrand: Node = null;
 
+    // 尺寸
+    private ContentWidth: number = 0;
+    private ContentHeight: number = 0;
+
     // 土地行列数
     private WidthCount: number = 0;
     private HeightCount: number = 0;
@@ -43,8 +47,20 @@ export class Soil extends Component {
     private ExtendBrandTileX: number = 0;
     private ExtendBrandTileY: number = 0;
 
+    private self: Component = null;
+
+    // 位置偏移
+    private OffsetX: number = 0;
+    private OffsetY: number = 0;
+
     onLoad() {
-        this.initLand();
+        this.self = this;
+        this.ContentWidth = this.node.getComponent(UITransform).width;
+        this.ContentHeight = this.node.getComponent(UITransform).height;
+        this.OffsetX = (this.ContentWidth / 2) - 110;
+        this.OffsetY = (this.ContentHeight / 2) - 50;
+
+        this.initLands();
         var gid = this.soilLayer.getTileGIDAt(0, 1);
 
         let layer: TiledLayer = this.soilLayer;
@@ -53,8 +69,8 @@ export class Soil extends Component {
         this.HeightCount = layerSize.height;
 
         // 初始化扩建牌
-        this.ExtendBrandTileX = RowOfCrops + 1;
-        this.ExtendBrandTileY = 0;
+        this.ExtendBrandTileX = 0;
+        this.ExtendBrandTileY = YCountOfCrops;
         this.initExtendBrand();
 
         this.initCrops();
@@ -78,78 +94,111 @@ export class Soil extends Component {
     getTilePos(localClickPos: Vec3): Vec2 {
         const tileSize = this.mapNode.getTileSize();
         const layerSize = this.soilLayer.getLayerSize();
-    
+
         const x = (localClickPos.x - this.mapNode.node.getPosition().x) / tileSize.x;
         const y = (this.mapNode.node.getPosition().y - localClickPos.y) / tileSize.y;
-    
+
         const tileX = Math.floor((layerSize.height - y + x) / 2);
         const tileY = Math.floor((layerSize.height - y - x) / 2);
-    
+
         return new Vec2(tileX, tileY);
     }
-    
-    
+
+
 
     // 初始化植物
-    initCrops():void{
+    initCrops(): void {
         let layerSize = this.soilLayer.getLayerSize();
-        for (let row = 0; row < RowOfCrops; row++) {
-            for (let col = 0; col < layerSize.width; col++) {
-                this.soilLayer.setTileGIDAt(landStateFat,  col, row,  1);
-                this.addCrop(row, col);
+        for (let x = 0; x < layerSize.width; x++) {
+            for (let y = 0; y < YCountOfCrops; y++) {
+                this.extendLand(x, y);
+                this.addCrop(x, y);
             }
         }
     }
 
     // 在行列处添加植物
-    addCrop(row: number, col: number):void{
+    addCrop(x: number, y: number): void {
         // 创建一个新的精灵节点
         const crop = new Crop(this.cropAtlas.getSpriteFrame('crop_101_04'));  //cc.instantiate(this.spritePrefab);
-        crop.setCellPosition(row, col);
+        crop.setCellPosition(x, y);
 
         //设置精灵节点的锚点为中下角
         const cropUITransform = crop.getComponent(UITransform);
         cropUITransform.anchorX = 0.5;
         cropUITransform.anchorY = 0;
 
-        // 使用修复后的getReleasePos函数设置精灵节点的位置
-        //const tilePos = this.soilLayer.getPositionAt(col, row); // 注意该函数的参数顺序是：列，行
-        //crop.setPosition(tilePos.x, tilePos.y);
-        //this.soilLayer.addUserNode(crop);
-        
+        this.node.addChild(crop);
 
-        //let tile = this.soilLayer.getTiledTileAt(col, row);
-        //tile.node.addComponent(Sprite).spriteFrame = this.cropAtlas.getSpriteFrame('crop_101_04');
-        this.soilLayer.node.addChild(crop);
-
-        
         // 使用修复后的getReleasePos函数设置精灵节点的位置
-        const tilePos = this.soilLayer.getPositionAt(col, row); // 注意该函数的参数顺序是：列，行
-        crop.setPosition(tilePos.x, tilePos.y);
+        const tilePos = this.soilLayer.getPositionAt(x, y);
+        crop.setPosition(tilePos.x - this.OffsetX, tilePos.y - this.OffsetY);
     }
-    
+
     // 初始化土地
-    initLand():void{
+    initLands(): void {
         let layerSize = this.soilLayer.getLayerSize();
         console.log("layersize ", layerSize);
 
         for (let i = 0; i < layerSize.width; i++) {
             for (let j = 0; j < layerSize.height; j++) {
-                this.soilLayer.setTileGIDAt(landStateNothing, i, j, 0);
+                this.initLand(i, j);
             }
         }
     }
 
-    // 初始化土地上的扩建牌
-    initExtendBrand():void{
-        //this.soilLayer.node.addChild(this.extendBrand);
-
-        const tilePos = this.soilLayer.getPositionAt(this.ExtendBrandTileY, this.ExtendBrandTileX); // 注意该函数的参数顺序是：列，行
-        this.extendBrand.setPosition(tilePos.x, tilePos.y);
-
-        const uiOpacity = this.extendBrand.getComponent(UIOpacity) || this.extendBrand.addComponent(UIOpacity);
-        uiOpacity.opacity = 255;
-        this.extendBrand.active = true;
+    // 初始化土地
+    initLand(x: number, y: number): void {
+        this.soilLayer.setTileGIDAt(landStateNothing, x, y, 0);
     }
-    
+
+    // 扩建土地
+    extendLand(x: number, y: number): void {
+        console.log("扩建土地：", x, y);
+        this.soilLayer.setTileGIDAt(landStateFat, x, y, 1);
+        this.soilLayer.markForUpdateRenderData();
+    }
+
+    // 初始化土地上的扩建牌
+    initExtendBrand(): void {
+        //设置精灵节点的锚点为中下角
+        const cropUITransform = this.extendBrand.getComponent(UITransform);
+        cropUITransform.anchorX = 0.5;
+        cropUITransform.anchorY = 0;
+
+        this.extendBrand.on(Node.EventType.TOUCH_START, this.onTouchExtendBrand, this);
+        this.setExtendBrandPosition();
+    }
+
+    setExtendBrandPosition(): void {
+        const uiOpacity = this.extendBrand.getComponent(UIOpacity) || this.extendBrand.addComponent(UIOpacity);
+
+        if (this.ExtendBrandTileX < this.WidthCount && this.ExtendBrandTileY < this.HeightCount) {
+            const tilePos = this.soilLayer.getPositionAt(this.ExtendBrandTileX, this.ExtendBrandTileY);
+            this.extendBrand.setPosition(tilePos.x - this.OffsetX, tilePos.y - this.OffsetY);
+            uiOpacity.opacity = 255;
+            this.extendBrand.active = true;
+        } else {
+            uiOpacity.opacity = 0;
+            this.extendBrand.active = false;
+        }
+    }
+
+    // 点击扩建牌处理事件
+    onTouchExtendBrand(event: Event) {
+        if (this.ExtendBrandTileX < this.WidthCount && this.ExtendBrandTileY < this.HeightCount) {
+            this.extendLand(this.ExtendBrandTileX, this.ExtendBrandTileY);
+            //this.addCrop(this.ExtendBrandTileX, this.ExtendBrandTileY);
+
+            this.ExtendBrandTileX++;
+            if (this.ExtendBrandTileX >= this.WidthCount) {
+                this.ExtendBrandTileX = 0;
+                this.ExtendBrandTileY++;
+            }
+        } else {
+            console.log("全部扩建完毕");
+        }
+        this.setExtendBrandPosition();
+    }
+
 }
