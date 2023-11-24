@@ -1,5 +1,6 @@
-import { _decorator, Component, TiledMap, TiledLayer, SpriteAtlas, Vec2, Node, Vec3, UITransform, Layers, TiledObjectGroup, Sprite, SpriteFrame, } from 'cc';
+import { _decorator, Component, TiledMap, TiledLayer, SpriteAtlas, Vec2, Node, Vec3, UITransform, UIOpacity, TiledObjectGroup, Sprite, SpriteFrame, } from 'cc';
 import { Crop } from './Crop';
+import ExtendBrand from './kuojian';
 
 const { ccclass, property } = _decorator;
 
@@ -11,6 +12,9 @@ const landStateDry = 2;
 const landStateDryHalf = 3;
 const landStateFatHalf = 4;
 const landStateFat = 5;
+
+// 初始化作物的行数
+const RowOfCrops = 2;
 
 
 @ccclass('Soil')
@@ -27,6 +31,17 @@ export class Soil extends Component {
     @property(SpriteAtlas)
     cropAtlas: SpriteAtlas = null;
 
+    // 扩建牌
+    @property({ type: Node })
+    extendBrand: Node = null;
+
+    // 土地行列数
+    private WidthCount: number = 0;
+    private HeightCount: number = 0;
+
+    // 扩建牌所在土地的位置序号
+    private ExtendBrandTileX: number = 0;
+    private ExtendBrandTileY: number = 0;
 
     onLoad() {
         this.initLand();
@@ -34,6 +49,13 @@ export class Soil extends Component {
 
         let layer: TiledLayer = this.soilLayer;
         let layerSize = layer.getLayerSize();
+        this.WidthCount = layerSize.width;
+        this.HeightCount = layerSize.height;
+
+        // 初始化扩建牌
+        this.ExtendBrandTileX = RowOfCrops + 1;
+        this.ExtendBrandTileY = 0;
+        this.initExtendBrand();
 
         this.initCrops();
 
@@ -71,7 +93,7 @@ export class Soil extends Component {
     // 初始化植物
     initCrops():void{
         let layerSize = this.soilLayer.getLayerSize();
-        for (let row = 0; row < 2; row++) {
+        for (let row = 0; row < RowOfCrops; row++) {
             for (let col = 0; col < layerSize.width; col++) {
                 this.soilLayer.setTileGIDAt(landStateFat,  col, row,  1);
                 this.addCrop(row, col);
@@ -106,7 +128,7 @@ export class Soil extends Component {
         crop.setPosition(tilePos.x, tilePos.y);
     }
     
-    
+    // 初始化土地
     initLand():void{
         let layerSize = this.soilLayer.getLayerSize();
         console.log("layersize ", layerSize);
@@ -116,6 +138,18 @@ export class Soil extends Component {
                 this.soilLayer.setTileGIDAt(landStateNothing, i, j, 0);
             }
         }
+    }
+
+    // 初始化土地上的扩建牌
+    initExtendBrand():void{
+        //this.soilLayer.node.addChild(this.extendBrand);
+
+        const tilePos = this.soilLayer.getPositionAt(this.ExtendBrandTileY, this.ExtendBrandTileX); // 注意该函数的参数顺序是：列，行
+        this.extendBrand.setPosition(tilePos.x, tilePos.y);
+
+        const uiOpacity = this.extendBrand.getComponent(UIOpacity) || this.extendBrand.addComponent(UIOpacity);
+        uiOpacity.opacity = 255;
+        this.extendBrand.active = true;
     }
     
 }
