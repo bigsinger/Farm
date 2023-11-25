@@ -1,6 +1,5 @@
 import { _decorator, Component, TiledMap, TiledLayer, SpriteAtlas, Vec2, Node, Vec3, UITransform, UIOpacity, TiledObjectGroup, Sprite, SpriteFrame, } from 'cc';
 import { Crop } from './Crop';
-import ExtendBrand from './kuojian';
 
 const { ccclass, property } = _decorator;
 
