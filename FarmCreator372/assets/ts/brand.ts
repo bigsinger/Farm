@@ -19,7 +19,7 @@ export class Brand extends Component {
         this.fireworks.active = true;
 
         // 获取fireworks节点的Animation组件
-        const anim : Animation = this.fireworks.getComponent(Animation);
+        const anim: Animation = this.fireworks.getComponent(Animation);
         anim.on(Animation.EventType.FINISHED, () => {
             // 动画播放完成后，隐藏fireworks节点
             this.fireworks.active = false;

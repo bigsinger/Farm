@@ -25,8 +25,8 @@ export default class Fireworks extends Component {
                 uiOpacity.opacity = 0;
                 this.loopCount = 0;
                 anim.stop();
-            }else{
-                anim.play("fireworks"); 
+            } else {
+                anim.play("fireworks");
             }
         }, this);
 

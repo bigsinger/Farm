@@ -1,5 +1,5 @@
 import { _decorator, Component, TiledMap, TiledLayer, SpriteAtlas, Vec2, Node, Vec3, UITransform, UIOpacity, TiledObjectGroup, Sprite, SpriteFrame, } from 'cc';
-import { Crop } from './Crop';
+import { Crop, CropIdBegin, CropIdEnd } from './Crop';
 
 const { ccclass, property } = _decorator;
 
@@ -119,7 +119,7 @@ export class Soil extends Component {
     // 在行列处添加植物
     addCrop(x: number, y: number): void {
         // 创建一个新的精灵节点
-        const crop = new Crop(this.cropAtlas.getSpriteFrame('crop_101_04'));  //cc.instantiate(this.spritePrefab);
+        const crop = new Crop(this.cropAtlas, this.getRandomNumber(CropIdBegin, CropIdEnd));
         crop.setCellPosition(x, y);
 
         //设置精灵节点的锚点为中下角
@@ -187,7 +187,7 @@ export class Soil extends Component {
     onTouchExtendBrand(event: Event) {
         if (this.ExtendBrandTileX < this.WidthCount && this.ExtendBrandTileY < this.HeightCount) {
             this.extendLand(this.ExtendBrandTileX, this.ExtendBrandTileY);
-            //this.addCrop(this.ExtendBrandTileX, this.ExtendBrandTileY);
+            this.addCrop(this.ExtendBrandTileX, this.ExtendBrandTileY);
 
             this.ExtendBrandTileX++;
             if (this.ExtendBrandTileX >= this.WidthCount) {
@@ -200,4 +200,7 @@ export class Soil extends Component {
         this.setExtendBrandPosition();
     }
 
+    getRandomNumber(min: number, max: number): number {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
 }
