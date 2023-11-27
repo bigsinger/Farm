@@ -1,0 +1,102 @@
+[
+
+    {
+        "name": "白萝卜",
+        "id": 101,
+        "matureTimes":1,
+        "tempLow": 2,
+        "tempHigh": 25,
+        "lifecycle":[
+            {
+                "name": "种子期",
+                "time": 3
+            },
+            {
+                "name": "幼苗期",
+                "time": 7
+            },
+            {
+                "name": "生长期",
+                "time": 10
+            },
+            {
+                "name": "收获期",
+                "time": 10
+            },
+            {
+                "name": "开花期",
+                "time": 10
+            },
+            {
+                "name": "成熟期",
+                "time": 10
+            }
+        ]
+    },
+    {
+        "name": "青菜",
+        "id": 102,
+        "matureTimes":1,
+        "tempLow": 2,
+        "tempHigh": 25,
+        "lifecycle":[
+            {
+                "name": "种子期",
+                "time": 3
+            },
+            {
+                "name": "幼苗期",
+                "time": 3
+            },
+            {
+                "name": "生长期",
+                "time": 10
+            },
+            {
+                "name": "收获期",
+                "time": 10
+            },
+            {
+                "name": "开花期",
+                "time": 10
+            },
+            {
+                "name": "成熟期",
+                "time": 10
+            }
+        ]
+    },
+    {
+        "name": "辣椒",
+        "id": 103,
+        "matureTimes":-1,
+        "tempLow": 2,
+        "tempHigh": 25,
+        "lifecycle":[
+            {
+                "name": "种子期",
+                "time": 3
+            },
+            {
+                "name": "幼苗期",
+                "time": 7
+            },
+            {
+                "name": "生长期",
+                "time": 10
+            },
+            {
+                "name": "开花期",
+                "time": 10
+            },
+            {
+                "name": "成熟期",
+                "time": 10
+            },
+            {
+                "name": "收获期",
+                "time": 10
+            }
+        ]
+    }
+]

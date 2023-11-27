@@ -1,19 +1,8 @@
 import { _decorator, Component, TiledMap, TiledLayer, SpriteAtlas, Vec2, Node, Vec3, UITransform, UIOpacity, TiledObjectGroup, Sprite, SpriteFrame, } from 'cc';
-import { Crop, CropIdBegin, CropIdEnd } from './Crop';
+import { CropNode } from './Crop';
+import { Common, common } from './Common';
 
 const { ccclass, property } = _decorator;
-
-
-// 土地的状态标识
-const landStateNothing = 0;
-const landStateVirgin = 1;
-const landStateDry = 2;
-const landStateDryHalf = 3;
-const landStateFatHalf = 4;
-const landStateFat = 5;
-
-// 初始化作物的行数
-const YCountOfCrops = 2;
 
 
 @ccclass('Soil')
@@ -52,6 +41,9 @@ export class Soil extends Component {
     private OffsetX: number = 0;
     private OffsetY: number = 0;
 
+    // 土地上种植的作物
+    private crops: CropNode[] = [];
+
     onLoad() {
         this.self = this;
         this.ContentWidth = this.node.getComponent(UITransform).width;
@@ -75,6 +67,12 @@ export class Soil extends Component {
         this.initCrops();
 
         this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
+    }
+
+    update (deltaTime: number) {
+        for (let i = 0; i < this.crops.length; i++) {
+            this.crops[i].onGrowing(null, deltaTime);
+        }    
     }
 
     onTouchStart(event) {
@@ -103,8 +101,6 @@ export class Soil extends Component {
         return new Vec2(tileX, tileY);
     }
 
-
-
     // 初始化植物
     initCrops(): void {
         let layerSize = this.soilLayer.getLayerSize();
@@ -119,8 +115,8 @@ export class Soil extends Component {
     // 在行列处添加植物
     addCrop(x: number, y: number): void {
         // 创建一个新的精灵节点
-        const crop = new Crop(this.cropAtlas, this.getRandomNumber(CropIdBegin, CropIdEnd));
-        crop.setCellPosition(x, y);
+        const crop = new CropNode(this.cropAtlas, Common.getRandomNumber(CropIdRange.Low, CropIdRange.High));
+        crop.setTilePosition(x, y);
 
         //设置精灵节点的锚点为中下角
         const cropUITransform = crop.getComponent(UITransform);
@@ -128,6 +124,7 @@ export class Soil extends Component {
         cropUITransform.anchorY = 0;
 
         this.node.addChild(crop);
+        this.crops.push(crop);
 
         // 使用修复后的getReleasePos函数设置精灵节点的位置
         const tilePos = this.soilLayer.getPositionAt(x, y);
@@ -148,13 +145,13 @@ export class Soil extends Component {
 
     // 初始化土地
     initLand(x: number, y: number): void {
-        this.soilLayer.setTileGIDAt(landStateNothing, x, y, 0);
+        this.soilLayer.setTileGIDAt(LandState.Nothing, x, y, 0);
     }
 
     // 扩建土地
     extendLand(x: number, y: number): void {
         console.log("扩建土地：", x, y);
-        this.soilLayer.setTileGIDAt(landStateFat, x, y, 1);
+        this.soilLayer.setTileGIDAt(LandState.Fat, x, y, 1);
         this.soilLayer.markForUpdateRenderData();
     }
 
@@ -169,6 +166,7 @@ export class Soil extends Component {
         this.setExtendBrandPosition();
     }
 
+    // 设置扩建牌的位置
     setExtendBrandPosition(): void {
         const uiOpacity = this.extendBrand.getComponent(UIOpacity) || this.extendBrand.addComponent(UIOpacity);
 
@@ -200,7 +198,4 @@ export class Soil extends Component {
         this.setExtendBrandPosition();
     }
 
-    getRandomNumber(min: number, max: number): number {
-        return Math.floor(Math.random() * (max - min + 1) + min);
-    }
 }
