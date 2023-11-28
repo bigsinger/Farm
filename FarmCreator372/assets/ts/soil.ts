@@ -64,6 +64,16 @@ export class Soil extends Component {
     private crops: CropNode[] = [];
 
     onLoad() {
+        //////////////////////////////////
+        // 学习测试用的隐藏掉
+        var cropLayer = this.node.getChildByName("cropLayer");
+        if (cropLayer) {
+            const uiOpacity = cropLayer.getComponent(UIOpacity) || cropLayer.addComponent(UIOpacity);
+            uiOpacity.opacity = 0;
+            cropLayer.active = false;
+        }
+        //////////////////////////////////
+
         this.self = this;
         common.cropAtlas = this.cropAtlas;
         this.ContentWidth = this.node.getComponent(UITransform).width;
