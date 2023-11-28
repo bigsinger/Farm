@@ -4,6 +4,32 @@ import { Common, NaturalEnv, common } from './Common'
 const { ccclass, property } = _decorator;
 
 
+////////////////////////////////////////////////////////////////
+// 作物相关
+////////////////////////////////////////////////////////////////
+
+// 声明全局的枚举类型：作物状态
+enum CropState {
+    Seed = 0,
+    Seeding = 1,
+    Growing = 2,
+    Flowering = 3,
+    Fructifying = 4,
+    Harvest = 999,
+    Dead = 1000,
+}
+
+// 声明全局的枚举类型：作物Id
+export enum CropIdRange {
+    Low = 101,      // 种子Id起始序号
+    High = 115,     // 种子Id结束序号
+}
+
+// 作物配置文件名
+const CropDataResourceName = "crop/crops";   //resources/crop/crops.json
+////////////////////////////////////////////////////////////////
+
+
 // 作物的生命周期
 @ccclass('CropLifecycle')
 export class CropLifecycle {
@@ -23,9 +49,9 @@ export class CropLifecycle {
     public static deserialize(json: any): CropLifecycle {
         var lifecycle = new CropLifecycle();
         lifecycle.Name = json.name;
+        lifecycle.Days = json.time;
         lifecycle.Fuel = json.fuel;
         lifecycle.Water = json.water;
-        lifecycle.Days = json.time;
         return lifecycle;
     }
 }
@@ -51,31 +77,42 @@ export class CropData {
     // 生命周期数组
     public Lifecycles: CropLifecycle[] = [];
 
+    // 是否初始化的标志
+    public static IsInit: boolean = false;
+
     // 全部作物数据
     public static AllCrops: CropData[] = [];
-    
-    // 作物的当前生命周期
-    public CurrentLifecycleIndex: number = 0;
 
-    // 作物的当前生命周期的开始时间（13位总毫秒数）
-    public CurrentLifecycleStartTime: number = 0;
+    constructor(CropId: number) {
+        if (CropData.IsInit == false) {
+            CropData.deserializeAll();
+            CropData.IsInit = true;
+        }
 
-    // 作物的当前生命周期的累积生长时间（13位总毫秒数）
-    public CurrentLifecycleGrowTime: number = 0;
+        if (CropId > 0) {
+            this.CropId = CropId;
+            this.initCropLifecycleFromId(CropId);
+        }
+    }
 
-    // 已经成熟的次数
-    public MatureAlreadyTimes: number = 0;
-
-
-    constructor() {
-        if (CropData.AllCrops.length == 0) {
-            CropData.AllCrops = CropData.deserializeAll();
+    // 通过作物Id获取作物生长周期数据
+    public initCropLifecycleFromId(CropId: number): void {
+        for (var i = 0; i < CropData.AllCrops.length; i++) {
+            if (CropData.AllCrops[i].CropId == CropId) {
+                var crop = CropData.AllCrops[i];
+                this.CropName = crop.CropName;
+                this.TempLow = crop.TempLow;
+                this.TempHigh = crop.TempHigh;
+                this.MatureMaxTimes = crop.MatureMaxTimes;
+                this.Lifecycles = crop.Lifecycles;
+                break;
+            }
         }
     }
 
     // 从json数据反序列化单个作物数据
     public static deserializeOne(json: any): CropData {
-        var cropData = new CropData();
+        var cropData = new CropData(0);
 
         cropData.CropName = json.name;
         cropData.CropId = json.id;
@@ -93,25 +130,25 @@ export class CropData {
 
     // 从json数据反序列化所有作物数据
     // 读取json资源：https://docs.cocos.com/creator/manual/zh/asset/json.html
-    public static deserializeAll(): CropData[] {
-        var AllCrops: CropData[] = [];
-        // resources.load(CropDataResourceName, (err: any, res: JsonAsset) => {
-        //     if (err) {
-        //         error(err.message || err);
-        //         return;
-        //     }
-        //     // 获取到 Json 数据
-        //     const jsonData: any = res.json!;
-        //     for (var i = 0; i < jsonData.length; i++) {
-        //         CropData.AllCrops.push(CropData.deserializeOne(jsonData[i]));
-        //     }
-        // })
-
-        return AllCrops;
+    public static deserializeAll(): void {
+        console.log("load crop data...");
+        resources.load(CropDataResourceName, (err: any, res: JsonAsset) => {
+            if (err) {
+                console.log("load crop data error");
+                error(err.message || err);
+                return;
+            }
+            // 获取到 Json 数据
+            const jsonData: any = res.json!;
+            for (var i = 0; i < jsonData.length; i++) {
+                CropData.AllCrops.push(CropData.deserializeOne(jsonData[i]));
+            }
+            console.log("load crop data ok");
+        })
     }
 }
 
-let cropsData: CropData = new CropData();
+let cropsData: CropData = new CropData(0);
 
 
 @ccclass('CropNode')
@@ -124,6 +161,23 @@ export class CropNode extends Node {
 
     public crop: CropData = null;
 
+    
+    // 作物的当前生命周期
+    public CurrentLifecycleIndex: number = CropState.Seed;
+
+    // 作物的种植时间（13位总毫秒数）
+    public PlantTime: number = 0;
+
+    // 作物的当前生命周期的开始时间（13位总毫秒数）
+    public CurrentLifecycleStartTime: number = 0;
+
+    // 作物的当前生命周期的累积生长时间（13位总毫秒数）
+    public CurrentLifecycleGrowTime: number = 0;
+
+    // 已经成熟的次数
+    public MatureAlreadyTimes: number = 0;
+
+
     // @property({visible:true})
     // private _jsonAsset: JsonAsset = new JsonAsset();
 
@@ -131,7 +185,16 @@ export class CropNode extends Node {
         super();
 
         var self = this;
-        this.crop.CropId = CropId;
+        this.CurrentLifecycleIndex = CropState.Seed;
+        this.CurrentLifecycleStartTime = this.PlantTime = Date.now();
+
+        this.crop = new CropData(CropId);
+        if (this.crop.Lifecycles.length == 0) {
+            console.log("缺少作物数据，检查作物json配置文件是否加载成功, id: ", CropId);
+            this.crop = null;
+            return;
+        }
+
         self.on(Node.EventType.TOUCH_START, function () {
             console.log(`Crop TOUCH_START tile: (${self.TilePosX}, ${self.TilePosY}) ; xyz: (${self.position.x}, ${self.position.y}, ${self.position.z})`);
         });
@@ -187,14 +250,22 @@ export class CropNode extends Node {
 
     // 返回作物的精灵图片名
     private getSpriteFrameName(lifecycleIndex: number = 0): string {
-        var name = "crop_" + this.crop.CropId;
-        if (lifecycleIndex > 0) {
-            var name = "crop_" + this.crop.CropId + "_0" + lifecycleIndex;
+        if (lifecycleIndex == 0) {
+            return "crop_start";
+        }else if (lifecycleIndex == CropState.Dead) {
+            return "crop_end";
+        }else {
+            return "crop_" + this.crop.CropId + "_0" + lifecycleIndex;
         }
-        return name;
     }
 
+    // 作物生长，在soil.ts中的 update 函数中调用
     public onGrowing(env: NaturalEnv, deltaTime: number): void {
+        if(this.isDead()){
+            console.log("作物已经死亡，不再生长", this.crop.CropId, this.crop.CropName);
+            return;
+        }
+
         if(env){
             if (env.Water <= 0) {
                 console.log("水分不足，作物停止生长");
@@ -218,23 +289,56 @@ export class CropNode extends Node {
             }
         }
 
-        var minutes = Common.RealTimeToGameTime(this.crop.Lifecycles[this.crop.CurrentLifecycleIndex].Days);
+        if (CropData.AllCrops.length == 0) {
+            console.log("缺少作物数据，检查作物json配置文件是否加载成功");
+            return;
+        }
+        if (this.crop.Lifecycles.length == 0){
+            return;
+        }
 
-        // 转化为秒计算
-        if ((Date.now() - this.crop.CurrentLifecycleStartTime) > minutes * 60 * 1000) {
-            this.crop.CurrentLifecycleIndex += 1;
-            if (this.crop.CurrentLifecycleIndex >= this.crop.Lifecycles.length) {
-                this.crop.MatureAlreadyTimes += 1;
-                if (this.crop.MatureMaxTimes > 0 && this.crop.MatureAlreadyTimes >= this.crop.MatureMaxTimes) {
-                    console.log("作物寿命结束，作物死亡");
-                    return;
+        console.log(this.crop.CropName + " - " + this.crop.CropId + " 当前周期: ", this.CurrentLifecycleIndex + " / " + this.crop.Lifecycles.length);
+        var timeNow = Date.now();
+        var minutes = Common.RealTimeToGameTime(this.crop.Lifecycles[this.CurrentLifecycleIndex].Days);
+        console.log("minutes: ", minutes, timeNow, this.CurrentLifecycleStartTime, (timeNow - this.CurrentLifecycleStartTime), minutes * 60 * 1000);
+
+        // 转化为毫秒计算
+        if ((timeNow - this.CurrentLifecycleStartTime) > minutes * 60 * 1000) {
+            console.log("1111");
+            // 更新作物的生长周期
+            this.CurrentLifecycleIndex += 1;
+
+            // 判断作物是否已经成熟
+            if (this.CurrentLifecycleIndex >= this.crop.Lifecycles.length) {
+                this.MatureAlreadyTimes += 1;
+                if (this.crop.MatureMaxTimes > 0 && this.MatureAlreadyTimes >= this.crop.MatureMaxTimes) {
+                    this.setDead();
                 } else {
-                    this.crop.CurrentLifecycleIndex = CropState.Growing; // 重新进入生长期
+                    // 重新进入生长期
+                    this.enterNewLifecycle(timeNow);
                 }
             }
 
-            var spriteFrame = common.cropAtlas.getSpriteFrame(this.getSpriteFrameName(this.crop.CurrentLifecycleIndex));
+            var spriteFrame = common.cropAtlas.getSpriteFrame(this.getSpriteFrameName(this.CurrentLifecycleIndex));
             this.mSprite.spriteFrame = spriteFrame;
         }
+    }
+
+    // 判断作物是否已经死亡
+    private isDead(): boolean {
+        return this.CurrentLifecycleIndex == CropState.Dead;
+    }
+
+    // 设置作物死亡
+    private setDead(): void {
+        console.log("作物寿命结束，作物死亡");
+        this.CurrentLifecycleIndex = CropState.Dead;
+    }
+
+    // 进入新一轮的周期
+    public enterNewLifecycle(timeStart:number): void {
+        this.CurrentLifecycleIndex = CropState.Growing;
+        this.CurrentLifecycleStartTime = timeStart;
+        this.CurrentLifecycleGrowTime = 0;
     }
 }

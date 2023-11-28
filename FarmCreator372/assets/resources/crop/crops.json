@@ -9,32 +9,38 @@
         "lifecycle":[
             {
                 "name": "种子期",
+                "fuel":0,
+                "water":1,
                 "time": 3
             },
             {
                 "name": "幼苗期",
+                "fuel":1,
+                "water":1,
                 "time": 7
             },
             {
                 "name": "生长期",
+                "fuel":1,
+                "water":1,
                 "time": 10
             },
             {
                 "name": "收获期",
-                "time": 10
-            },
-            {
-                "name": "开花期",
+                "fuel":0,
+                "water":0,
                 "time": 10
             },
             {
                 "name": "成熟期",
+                "fuel":0,
+                "water":0,
                 "time": 10
             }
         ]
     },
     {
-        "name": "青菜",
+        "name": "胡萝卜",
         "id": 102,
         "matureTimes":1,
         "tempLow": 2,
@@ -42,59 +48,680 @@
         "lifecycle":[
             {
                 "name": "种子期",
+                "fuel":0,
+                "water":1,
                 "time": 3
             },
             {
                 "name": "幼苗期",
-                "time": 3
+                "fuel":1,
+                "water":1,
+                "time": 7
             },
             {
                 "name": "生长期",
+                "fuel":1,
+                "water":1,
                 "time": 10
             },
             {
                 "name": "收获期",
-                "time": 10
-            },
-            {
-                "name": "开花期",
+                "fuel":0,
+                "water":0,
                 "time": 10
             },
             {
                 "name": "成熟期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            }
+        ]
+    },
+    {
+        "name": "玉米",
+        "id": 103,
+        "matureTimes":1,
+        "tempLow": 2,
+        "tempHigh": 25,
+        "lifecycle":[
+            {
+                "name": "种子期",
+                "fuel":0,
+                "water":1,
+                "time": 3
+            },
+            {
+                "name": "幼苗期",
+                "fuel":1,
+                "water":1,
+                "time": 7
+            },
+            {
+                "name": "生长期",
+                "fuel":1,
+                "water":1,
+                "time": 10
+            },
+            {
+                "name": "开花期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "成熟期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "收获期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            }
+        ]
+    },
+    {
+        "name": "土豆",
+        "id": 104,
+        "matureTimes":1,
+        "tempLow": 2,
+        "tempHigh": 25,
+        "lifecycle":[
+            {
+                "name": "种子期",
+                "fuel":0,
+                "water":1,
+                "time": 3
+            },
+            {
+                "name": "幼苗期",
+                "fuel":1,
+                "water":1,
+                "time": 7
+            },
+            {
+                "name": "生长期",
+                "fuel":1,
+                "water":1,
+                "time": 10
+            },
+            {
+                "name": "开花期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "成熟期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "收获期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            }
+        ]
+    },
+    {
+        "name": "茄子",
+        "id": 105,
+        "matureTimes":1,
+        "tempLow": 2,
+        "tempHigh": 25,
+        "lifecycle":[
+            {
+                "name": "种子期",
+                "fuel":0,
+                "water":1,
+                "time": 3
+            },
+            {
+                "name": "幼苗期",
+                "fuel":1,
+                "water":1,
+                "time": 7
+            },
+            {
+                "name": "生长期",
+                "fuel":1,
+                "water":1,
+                "time": 10
+            },
+            {
+                "name": "开花期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "成熟期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "收获期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            }
+        ]
+    },
+    {
+        "name": "番茄",
+        "id": 106,
+        "matureTimes":1,
+        "tempLow": 2,
+        "tempHigh": 25,
+        "lifecycle":[
+            {
+                "name": "种子期",
+                "fuel":0,
+                "water":1,
+                "time": 3
+            },
+            {
+                "name": "幼苗期",
+                "fuel":1,
+                "water":1,
+                "time": 7
+            },
+            {
+                "name": "生长期",
+                "fuel":1,
+                "water":1,
+                "time": 10
+            },
+            {
+                "name": "开花期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "成熟期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "收获期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            }
+        ]
+    },
+    {
+        "name": "豌豆",
+        "id": 107,
+        "matureTimes":1,
+        "tempLow": 2,
+        "tempHigh": 25,
+        "lifecycle":[
+            {
+                "name": "种子期",
+                "fuel":0,
+                "water":1,
+                "time": 3
+            },
+            {
+                "name": "幼苗期",
+                "fuel":1,
+                "water":1,
+                "time": 7
+            },
+            {
+                "name": "生长期",
+                "fuel":1,
+                "water":1,
+                "time": 10
+            },
+            {
+                "name": "开花期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "成熟期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "收获期",
+                "fuel":0,
+                "water":0,
                 "time": 10
             }
         ]
     },
     {
         "name": "辣椒",
-        "id": 103,
+        "id": 108,
         "matureTimes":-1,
         "tempLow": 2,
         "tempHigh": 25,
         "lifecycle":[
             {
                 "name": "种子期",
+                "fuel":0,
+                "water":1,
                 "time": 3
             },
             {
                 "name": "幼苗期",
+                "fuel":1,
+                "water":1,
                 "time": 7
             },
             {
                 "name": "生长期",
+                "fuel":1,
+                "water":1,
                 "time": 10
             },
             {
                 "name": "开花期",
+                "fuel":1,
+                "water":1,
                 "time": 10
             },
             {
                 "name": "成熟期",
+                "fuel":1,
+                "water":1,
                 "time": 10
             },
             {
                 "name": "收获期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            }
+        ]
+    },
+    {
+        "name": "南瓜",
+        "id": 109,
+        "matureTimes":1,
+        "tempLow": 2,
+        "tempHigh": 25,
+        "lifecycle":[
+            {
+                "name": "种子期",
+                "fuel":0,
+                "water":1,
+                "time": 3
+            },
+            {
+                "name": "幼苗期",
+                "fuel":1,
+                "water":1,
+                "time": 7
+            },
+            {
+                "name": "生长期",
+                "fuel":1,
+                "water":1,
+                "time": 10
+            },
+            {
+                "name": "开花期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "成熟期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "收获期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            }
+        ]
+    },
+    {
+        "name": "草莓",
+        "id": 110,
+        "matureTimes":2,
+        "tempLow": 2,
+        "tempHigh": 25,
+        "lifecycle":[
+            {
+                "name": "种子期",
+                "fuel":0,
+                "water":1,
+                "time": 3
+            },
+            {
+                "name": "幼苗期",
+                "fuel":1,
+                "water":1,
+                "time": 7
+            },
+            {
+                "name": "生长期",
+                "fuel":1,
+                "water":1,
+                "time": 10
+            },
+            {
+                "name": "开花期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "成熟期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "收获期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            }
+        ]
+    },
+    {
+        "name": "西瓜",
+        "id": 111,
+        "matureTimes":2,
+        "tempLow": 2,
+        "tempHigh": 25,
+        "lifecycle":[
+            {
+                "name": "种子期",
+                "fuel":0,
+                "water":1,
+                "time": 3
+            },
+            {
+                "name": "幼苗期",
+                "fuel":1,
+                "water":1,
+                "time": 7
+            },
+            {
+                "name": "生长期",
+                "fuel":1,
+                "water":1,
+                "time": 10
+            },
+            {
+                "name": "开花期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "成熟期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "收获期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            }
+        ]
+    },
+    {
+        "name": "榴莲",
+        "id": 112,
+        "matureTimes":-1,
+        "tempLow": 2,
+        "tempHigh": 40,
+        "lifecycle":[
+            {
+                "name": "种子期",
+                "fuel":0,
+                "water":1,
+                "time": 3
+            },
+            {
+                "name": "幼苗期",
+                "fuel":1,
+                "water":1,
+                "time": 7
+            },
+            {
+                "name": "生长期",
+                "fuel":1,
+                "water":1,
+                "time": 10
+            },
+            {
+                "name": "长成",
+                "fuel":1,
+                "water":1,
+                "time": 10
+            },
+            {
+                "name": "开花期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "成熟期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "收获期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            }
+        ]
+    },
+    {
+        "name": "桃子",
+        "id": 113,
+        "matureTimes":-1,
+        "tempLow": 2,
+        "tempHigh": 40,
+        "lifecycle":[
+            {
+                "name": "种子期",
+                "fuel":0,
+                "water":1,
+                "time": 3
+            },
+            {
+                "name": "幼苗期",
+                "fuel":1,
+                "water":1,
+                "time": 7
+            },
+            {
+                "name": "生长期",
+                "fuel":1,
+                "water":1,
+                "time": 10
+            },
+            {
+                "name": "开花期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "成熟期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "收获期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            }
+        ]
+    },
+    {
+        "name": "凤梨",
+        "id": 114,
+        "matureTimes":1,
+        "tempLow": 2,
+        "tempHigh": 40,
+        "lifecycle":[
+            {
+                "name": "种子期",
+                "fuel":0,
+                "water":1,
+                "time": 3
+            },
+            {
+                "name": "幼苗期",
+                "fuel":1,
+                "water":1,
+                "time": 7
+            },
+            {
+                "name": "生长期",
+                "fuel":1,
+                "water":1,
+                "time": 10
+            },
+            {
+                "name": "长成",
+                "fuel":1,
+                "water":1,
+                "time": 10
+            },
+            {
+                "name": "开花期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "成熟期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "收获期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            }
+        ]
+    },
+    {
+        "name": "樱桃",
+        "id": 115,
+        "matureTimes":-1,
+        "tempLow": 2,
+        "tempHigh": 40,
+        "lifecycle":[
+            {
+                "name": "种子期",
+                "fuel":0,
+                "water":1,
+                "time": 3
+            },
+            {
+                "name": "幼苗期",
+                "fuel":1,
+                "water":1,
+                "time": 7
+            },
+            {
+                "name": "生长期",
+                "fuel":1,
+                "water":1,
+                "time": 10
+            },
+            {
+                "name": "长成",
+                "fuel":1,
+                "water":1,
+                "time": 10
+            },
+            {
+                "name": "开花期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "成熟期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "收获期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            }
+        ]
+    },
+    {
+        "name": "青菜",
+        "id": 120,
+        "matureTimes":1,
+        "tempLow": 2,
+        "tempHigh": 25,
+        "lifecycle":[
+            {
+                "name": "种子期",
+                "fuel":0,
+                "water":1,
+                "time": 3
+            },
+            {
+                "name": "幼苗期",
+                "fuel":1,
+                "water":1,
+                "time": 3
+            },
+            {
+                "name": "生长期",
+                "fuel":1,
+                "water":1,
+                "time": 10
+            },
+            {
+                "name": "收获期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "开花期",
+                "fuel":0,
+                "water":0,
+                "time": 10
+            },
+            {
+                "name": "成熟期",
+                "fuel":0,
+                "water":0,
                 "time": 10
             }
         ]
