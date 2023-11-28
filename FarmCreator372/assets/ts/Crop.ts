@@ -13,8 +13,9 @@ enum CropState {
     Seed = 0,
     Seeding = 1,
     Growing = 2,
-    Flowering = 3,
-    Fructifying = 4,
+    GrowingEx = 3,
+    Flowering = 4,
+    Fructifying = 5,
     Harvest = 999,
     Dead = 1000,
 }
@@ -262,7 +263,7 @@ export class CropNode extends Node {
     // 作物生长，在soil.ts中的 update 函数中调用
     public onGrowing(env: NaturalEnv, deltaTime: number): void {
         if(this.isDead()){
-            console.log("作物已经死亡，不再生长", this.crop.CropId, this.crop.CropName);
+            //console.log("作物已经死亡，不再生长", this.crop.CropId, this.crop.CropName);
             return;
         }
 
@@ -297,16 +298,14 @@ export class CropNode extends Node {
             return;
         }
 
-        console.log(this.crop.CropName + " - " + this.crop.CropId + " 当前周期: ", this.CurrentLifecycleIndex + " / " + this.crop.Lifecycles.length);
+        //console.log(this.crop.CropName + " - " + this.crop.CropId + " 当前周期: ", this.CurrentLifecycleIndex + " / " + this.crop.Lifecycles.length);
         var timeNow = Date.now();
         var minutes = Common.RealTimeToGameTime(this.crop.Lifecycles[this.CurrentLifecycleIndex].Days);
-        console.log("minutes: ", minutes, timeNow, this.CurrentLifecycleStartTime, (timeNow - this.CurrentLifecycleStartTime), minutes * 60 * 1000);
 
         // 转化为毫秒计算
         if ((timeNow - this.CurrentLifecycleStartTime) > minutes * 60 * 1000) {
-            console.log("1111");
-            // 更新作物的生长周期
-            this.CurrentLifecycleIndex += 1;
+            // 进入下一个周期
+            this.enterNextLifecycle(timeNow);
 
             // 判断作物是否已经成熟
             if (this.CurrentLifecycleIndex >= this.crop.Lifecycles.length) {
@@ -335,9 +334,16 @@ export class CropNode extends Node {
         this.CurrentLifecycleIndex = CropState.Dead;
     }
 
+    // 进入下一个周期
+    public enterNextLifecycle(timeStart:number): void {
+        this.CurrentLifecycleIndex += 1;
+        this.CurrentLifecycleStartTime = timeStart;
+        this.CurrentLifecycleGrowTime = 0;
+    }
+
     // 进入新一轮的周期
     public enterNewLifecycle(timeStart:number): void {
-        this.CurrentLifecycleIndex = CropState.Growing;
+        this.CurrentLifecycleIndex = CropState.GrowingEx;
         this.CurrentLifecycleStartTime = timeStart;
         this.CurrentLifecycleGrowTime = 0;
     }
