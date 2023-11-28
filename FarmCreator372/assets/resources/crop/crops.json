@@ -396,7 +396,7 @@
     {
         "name": "草莓",
         "id": 110,
-        "matureTimes":2,
+        "matureTimes":-1,
         "tempLow": 2,
         "tempHigh": 25,
         "lifecycle":[
