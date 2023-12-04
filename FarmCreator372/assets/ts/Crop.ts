@@ -16,7 +16,7 @@ enum CropState {
     GrowingEx = 3,
     Flowering = 4,
     Fructifying = 5,
-    Harvest = 999,
+    Mature = 999,
     Dead = 1000,
 }
 
@@ -73,7 +73,7 @@ export class CropData {
     public TempHigh: number = 0;
     
     // 一次生命周期最大的成熟次数
-    public MatureMaxTimes: number = 1;
+    public HarvestMaxTimes: number = 1;
 
     // 生命周期数组
     public Lifecycles: CropLifecycle[] = [];
@@ -104,7 +104,7 @@ export class CropData {
                 this.CropName = crop.CropName;
                 this.TempLow = crop.TempLow;
                 this.TempHigh = crop.TempHigh;
-                this.MatureMaxTimes = crop.MatureMaxTimes;
+                this.HarvestMaxTimes = crop.HarvestMaxTimes;
                 this.Lifecycles = crop.Lifecycles;
                 break;
             }
@@ -117,7 +117,7 @@ export class CropData {
 
         cropData.CropName = json.name;
         cropData.CropId = json.id;
-        cropData.MatureMaxTimes = json.matureTimes;
+        cropData.HarvestMaxTimes = json.matureTimes;
         cropData.TempLow = json.tempLow;
         cropData.TempHigh = json.tempHigh;
 
@@ -176,18 +176,24 @@ export class CropNode extends Node {
     public CurrentLifecycleGrowTime: number = 0;
 
     // 已经成熟的次数
-    public MatureAlreadyTimes: number = 0;
+    public HarvestTimes: number = 0;
+
+    // 作物状态
+    private cropState: CropState = CropState.Seed;
 
 
-    // @property({visible:true})
-    // private _jsonAsset: JsonAsset = new JsonAsset();
+    // 种下
+    born():void{
+        this.CurrentLifecycleIndex = CropState.Seed;
+        this.cropState = CropState.Seed;
+        this.CurrentLifecycleStartTime = this.PlantTime = Date.now();
+    }
 
     constructor(cropAtlas: SpriteAtlas, CropId: number) {
         super();
 
         var self = this;
-        this.CurrentLifecycleIndex = CropState.Seed;
-        this.CurrentLifecycleStartTime = this.PlantTime = Date.now();
+        this.born();
 
         this.crop = new CropData(CropId);
         if (this.crop.Lifecycles.length == 0) {
@@ -196,11 +202,7 @@ export class CropNode extends Node {
             return;
         }
 
-        self.on(Node.EventType.TOUCH_START, function () {
-            common.audioController.playClickEffect();   // 播放点击音效
-            console.log(`Crop TOUCH_START tile: (${self.TilePosX}, ${self.TilePosY}) ; xyz: (${self.position.x}, ${self.position.y}, ${self.position.z})`);
-        });
-
+        self.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
 
         //director.getScene().addChild(this);
 
@@ -218,6 +220,26 @@ export class CropNode extends Node {
 
         this.mButton = this.addComponent(Button);
         this.mButton.transition = Button.Transition.SCALE;
+    }
+
+    // 点击时判断下是否成熟了，成熟了就自动收获
+    onTouchStart(event: Event) {
+        console.log(`Crop TOUCH_START tile: (${this.TilePosX}, ${this.TilePosY}) ; xyz: (${this.position.x}, ${this.position.y}, ${this.position.z})`);
+        
+        var needUpdate: Boolean = false;
+        if(this.cropState==CropState.Mature){
+            this.onHarvest();
+            needUpdate = true;
+        } else if(this.cropState==CropState.Dead) {
+            this.born();
+            needUpdate = true;
+        }
+
+        if(needUpdate){
+            this.updateSpriteFrame();            
+        }else{
+            common.audioController.playClickEffect();   // 播放点击音效
+        }
     }
 
     // 通过作物Id创建作物
@@ -254,7 +276,7 @@ export class CropNode extends Node {
     private getSpriteFrameName(lifecycleIndex: number = 0): string {
         if (lifecycleIndex == 0) {
             return "crop_start";
-        }else if (lifecycleIndex == CropState.Dead) {
+        }else if (lifecycleIndex == CropState.Dead || this.isDead()) {
             return "crop_end";
         }else {
             return "crop_" + this.crop.CropId + "_0" + lifecycleIndex;
@@ -307,47 +329,80 @@ export class CropNode extends Node {
         if ((timeNow - this.CurrentLifecycleStartTime) > minutes * 60 * 1000) {
             // 进入下一个周期
             this.enterNextLifecycle(timeNow);
+            this.updateSpriteFrame();            
+        }
+    }
 
-            // 判断作物是否已经成熟
-            if (this.CurrentLifecycleIndex >= this.crop.Lifecycles.length) {
-                this.MatureAlreadyTimes += 1;
-                // onHarvest(this.crop.CropId);   // 收获 后面设置回调，成熟后自动收获并累积数量、播放音效等
-                common.audioController.playGatherEffect();   // 播放收获音效
-                if (this.crop.MatureMaxTimes > 0 && this.MatureAlreadyTimes >= this.crop.MatureMaxTimes) {
-                    this.setDead();
-                } else {
-                    // 重新进入生长期
-                    this.enterNewLifecycle(timeNow);
-                }
+    updateSpriteFrame():void {
+        var spriteFrame = common.cropAtlas.getSpriteFrame(this.getSpriteFrameName(this.CurrentLifecycleIndex));
+        this.mSprite.spriteFrame = spriteFrame;
+    }
+
+    // 成熟了
+    onMature():void {
+        this.cropState = CropState.Mature;
+    }
+
+    // 是否成熟了
+    isMature():boolean {
+        return this.cropState == CropState.Mature;
+    }
+
+    // 收获
+    onHarvest(): void {
+        if (this.isMature()) {
+            console.log(`作物: " + ${this.crop.CropName}(${this.crop.CropId})  收获了xxx`);
+            common.audioController.playGatherEffect();   // 播放收获音效
+
+            this.HarvestTimes += 1;
+            //common.audioController.playMatureEffect();   // 播放成熟音效
+    
+            if (this.crop.HarvestMaxTimes > 0 && this.HarvestTimes >= this.crop.HarvestMaxTimes) {
+                this.Die();
+            } else {
+                // 重新进入生长期
+                this.enterNewLifecycle(Date.now());
             }
-
-            var spriteFrame = common.cropAtlas.getSpriteFrame(this.getSpriteFrameName(this.CurrentLifecycleIndex));
-            this.mSprite.spriteFrame = spriteFrame;
+        } else {
+            //console.log(`作物: " + ${this.crop.CropName}(${this.crop.CropId})  未成熟`);
         }
     }
 
     // 判断作物是否已经死亡
     private isDead(): boolean {
-        return this.CurrentLifecycleIndex == CropState.Dead;
+        return this.CurrentLifecycleIndex == CropState.Dead || this.cropState == CropState.Dead;
     }
 
     // 设置作物死亡
-    private setDead(): void {
-        console.log("作物寿命结束，作物死亡");
+    private Die(): void {
+        console.log(`作物: " + ${this.crop.CropName}(${this.crop.CropId}) 寿命结束，作物死亡`);
         this.CurrentLifecycleIndex = CropState.Dead;
+        this.cropState = CropState.Dead;
     }
 
     // 进入下一个周期
     public enterNextLifecycle(timeStart:number): void {
-        this.CurrentLifecycleIndex += 1;
-        this.CurrentLifecycleStartTime = timeStart;
-        this.CurrentLifecycleGrowTime = 0;
+        // 如果当前周期已经是成熟状态，则自动收获
+        if (this.isMature()) {
+            this.onHarvest(); 
+        }else{
+            this.CurrentLifecycleIndex += 1;
+            this.CurrentLifecycleStartTime = timeStart;
+            this.CurrentLifecycleGrowTime = 0;
+    
+            // 判断作物是否已经成熟
+            if (this.CurrentLifecycleIndex + 1 >= this.crop.Lifecycles.length) {
+                this.onMature();    // 成熟了
+            }
+        }
     }
 
     // 进入新一轮的周期
     public enterNewLifecycle(timeStart:number): void {
+        this.cropState = CropState.GrowingEx;
         this.CurrentLifecycleIndex = CropState.GrowingEx;
         this.CurrentLifecycleStartTime = timeStart;
         this.CurrentLifecycleGrowTime = 0;
     }
+
 }

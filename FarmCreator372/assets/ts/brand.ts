@@ -1,4 +1,5 @@
 import { _decorator, Component, Node, Animation, UIOpacity } from 'cc';
+import { common } from './Common';
 const { ccclass, property } = _decorator;
 
 @ccclass('Brand')
@@ -13,6 +14,8 @@ export class Brand extends Component {
     }
 
     onTouchStart(event: Event) {
+        common.audioController.playClickEffect();   // 播放点击音效
+
         // 获取fireworks节点的UIOpacity组件，并设置透明度为255（完全可见），并激活fireworks节点
         const uiOpacity = this.fireworks.getComponent(UIOpacity) || this.fireworks.addComponent(UIOpacity);
         uiOpacity.opacity = 255;
