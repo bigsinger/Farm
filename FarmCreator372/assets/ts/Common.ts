@@ -1,4 +1,5 @@
-import { _decorator, Component, TiledMap, TiledLayer, SpriteAtlas, Vec2, Node, Vec3, UITransform, UIOpacity, TiledObjectGroup, Sprite, SpriteFrame, } from 'cc';
+import { _decorator, AudioClip, AudioSource, Component, TiledMap, TiledLayer, SpriteAtlas, Vec2, Node, Vec3, UITransform, UIOpacity, TiledObjectGroup, Sprite, SpriteFrame, } from 'cc';
+import { AudioController } from './AudioController';
 const { ccclass, property } = _decorator;
 
 // https://blog.csdn.net/m0_66016308/article/details/129282746
@@ -7,6 +8,9 @@ const { ccclass, property } = _decorator;
 export class Common {
     // 作物图集
     public cropAtlas: SpriteAtlas = null;
+
+    public audioController: AudioController = null;
+    
 
     // 随机数 [min, max]
     public static getRandomNumber(min: number, max: number): number {

@@ -197,6 +197,7 @@ export class CropNode extends Node {
         }
 
         self.on(Node.EventType.TOUCH_START, function () {
+            common.audioController.playClickEffect();   // 播放点击音效
             console.log(`Crop TOUCH_START tile: (${self.TilePosX}, ${self.TilePosY}) ; xyz: (${self.position.x}, ${self.position.y}, ${self.position.z})`);
         });
 

@@ -1,4 +1,4 @@
-import { _decorator, Component, TiledMap, TiledLayer, SpriteAtlas, Vec2, Node, Vec3, UITransform, UIOpacity, TiledObjectGroup, Sprite, SpriteFrame, } from 'cc';
+import { _decorator, Component, TiledMap, TiledLayer, SpriteAtlas, Vec2, Node, Vec3, UITransform, UIOpacity, TiledObjectGroup, AudioClip, SpriteFrame, } from 'cc';
 import { CropNode, CropIdRange } from './Crop';
 import { Common, common } from './Common';
 
@@ -218,6 +218,8 @@ export class Soil extends Component {
     // 点击扩建牌处理事件
     onTouchExtendBrand(event: Event) {
         if (this.ExtendBrandTileX < this.WidthCount && this.ExtendBrandTileY < this.HeightCount) {
+            common.audioController.playExtandEffect();  // 播放扩建音效
+
             this.extendLand(this.ExtendBrandTileX, this.ExtendBrandTileY);
             this.addCrop(this.ExtendBrandTileX, this.ExtendBrandTileY);
 
