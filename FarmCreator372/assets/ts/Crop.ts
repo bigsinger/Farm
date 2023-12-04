@@ -311,6 +311,8 @@ export class CropNode extends Node {
             // 判断作物是否已经成熟
             if (this.CurrentLifecycleIndex >= this.crop.Lifecycles.length) {
                 this.MatureAlreadyTimes += 1;
+                // onHarvest(this.crop.CropId);   // 收获 后面设置回调，成熟后自动收获并累积数量、播放音效等
+                common.audioController.playGatherEffect();   // 播放收获音效
                 if (this.crop.MatureMaxTimes > 0 && this.MatureAlreadyTimes >= this.crop.MatureMaxTimes) {
                     this.setDead();
                 } else {

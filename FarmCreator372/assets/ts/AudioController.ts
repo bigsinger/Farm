@@ -16,6 +16,11 @@ export class AudioController extends Component {
     @property(AudioClip)
     public clipExtand: AudioClip = null!;
 
+    // 收获音效
+    @property(AudioClip)
+    public clipGather: AudioClip = null!;
+
+
     // 背景音乐
     @property(AudioSource)
     public backgroud: AudioSource = null!;
@@ -35,11 +40,18 @@ export class AudioController extends Component {
         this.backgroud.pause();
     }
 
+    // 音效：点击
     playClickEffect () {
         this.backgroud.playOneShot(this.clipClick, 1);
     }
 
+    // 音效：扩建
     playExtandEffect () {
         this.backgroud.playOneShot(this.clipExtand, 1);
+    }
+
+    // 音效：收获
+    playGatherEffect () {
+        this.backgroud.playOneShot(this.clipGather, 1);
     }
 }
