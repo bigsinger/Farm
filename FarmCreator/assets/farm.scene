@@ -562,6 +562,10 @@
       "__uuid__": "99ce7039-cad9-4b5a-a5f0-86431ded507e",
       "__expectedType__": "cc.AudioClip"
     },
+    "clipFireworks": {
+      "__uuid__": "31b418e8-8782-4494-a312-92abe925f690",
+      "__expectedType__": "cc.AudioClip"
+    },
     "backgroud": {
       "__id__": 13
     },

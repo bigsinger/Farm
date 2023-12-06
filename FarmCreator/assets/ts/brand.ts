@@ -30,5 +30,6 @@ export class Brand extends Component {
 
         // 播放名为'fireworks'的动画
         const state = anim.play('fireworks');
+        common.audioController.playSoundFireworks();   // 播放音效烟花
     }
 }

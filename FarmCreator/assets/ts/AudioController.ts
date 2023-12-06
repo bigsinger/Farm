@@ -23,7 +23,10 @@ export class AudioController extends Component {
     // 收获音效
     @property(AudioClip)
     public clipGather: AudioClip = null!;
-
+    
+    // 烟花音效
+    @property(AudioClip)
+    public clipFireworks: AudioClip = null!;
 
     // 背景音乐
     @property(AudioSource)
@@ -62,5 +65,10 @@ export class AudioController extends Component {
     // 音效：收获
     playSoundGather() {
         this.backgroud.playOneShot(this.clipGather, 1);
+    }
+
+    // 音效：烟花
+    playSoundFireworks() {
+        this.backgroud.playOneShot(this.clipFireworks, 1);
     }
 }
