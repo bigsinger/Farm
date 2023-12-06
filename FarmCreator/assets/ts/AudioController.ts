@@ -15,6 +15,10 @@ export class AudioController extends Component {
     // 扩展音效
     @property(AudioClip)
     public clipExtand: AudioClip = null!;
+    
+    // 铲除音效
+    @property(AudioClip)
+    public clipWipe: AudioClip = null!;
 
     // 收获音效
     @property(AudioClip)
@@ -31,27 +35,32 @@ export class AudioController extends Component {
     }
 
     // 播放音乐
-    play() {
+    playBGM() {
         this.backgroud.play();
     }
 
     // 暂停音乐
-    pause() {
+    pauseBGM() {
         this.backgroud.pause();
     }
 
     // 音效：点击
-    playClickEffect() {
+    playSoundClick() {
         this.backgroud.playOneShot(this.clipClick, 1);
     }
 
     // 音效：扩建
-    playExtandEffect() {
+    playSoundExtand() {
         this.backgroud.playOneShot(this.clipExtand, 1);
     }
 
+    // 音效：铲除
+    playSoundWipe() {
+        this.backgroud.playOneShot(this.clipWipe, 1);
+    }
+
     // 音效：收获
-    playGatherEffect() {
+    playSoundGather() {
         this.backgroud.playOneShot(this.clipGather, 1);
     }
 }

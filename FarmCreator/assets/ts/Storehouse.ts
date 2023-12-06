@@ -11,6 +11,6 @@ export class Storehouse extends Component {
 
     onTouchStart(event: Event) {
         console.log("点击了仓库");
-        common.audioController.playClickEffect();   // 播放点击音效
+        common.audioController.playSoundClick();   // 播放点击音效
     }
 }

@@ -28,8 +28,8 @@
   ],
   "general": {
     "designResolution": {
-      "width": 960,
-      "height": 640
+      "width": 1024,
+      "height": 768
     }
   },
   "script": {

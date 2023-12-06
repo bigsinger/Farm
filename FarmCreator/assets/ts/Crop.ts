@@ -231,6 +231,7 @@ export class CropNode extends Node {
             this.onHarvest();
             needUpdate = true;
         } else if (this.cropState == CropState.Dead) {
+            common.audioController.playSoundWipe();   // 播放音效：铲除
             this.born();
             needUpdate = true;
         }
@@ -238,7 +239,7 @@ export class CropNode extends Node {
         if (needUpdate) {
             this.updateSpriteFrame();
         } else {
-            common.audioController.playClickEffect();   // 播放点击音效
+            common.audioController.playSoundClick();   // 播放点击音效
         }
     }
 
@@ -352,7 +353,7 @@ export class CropNode extends Node {
     onHarvest(): void {
         if (this.isMature()) {
             console.log(`作物: " + ${this.crop.CropName}(${this.crop.CropId})  收获了xxx`);
-            common.audioController.playGatherEffect();   // 播放收获音效
+            common.audioController.playSoundGather();   // 播放收获音效
 
             this.HarvestTimes += 1;
             //common.audioController.playMatureEffect();   // 播放成熟音效

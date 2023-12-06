@@ -218,7 +218,7 @@ export class Soil extends Component {
     // 点击扩建牌处理事件
     onTouchExtendBrand(event: Event) {
         if (this.ExtendBrandTileX < this.WidthCount && this.ExtendBrandTileY < this.HeightCount) {
-            common.audioController.playExtandEffect();  // 播放扩建音效
+            common.audioController.playSoundExtand();  // 播放扩建音效
 
             this.extendLand(this.ExtendBrandTileX, this.ExtendBrandTileY);
             this.addCrop(this.ExtendBrandTileX, this.ExtendBrandTileY);
