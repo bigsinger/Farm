@@ -10,7 +10,7 @@ export class Common {
     public cropAtlas: SpriteAtlas = null;
 
     public audioController: AudioController = null;
-    
+
 
     // 随机数 [min, max]
     public static getRandomNumber(min: number, max: number): number {

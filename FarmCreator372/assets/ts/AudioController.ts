@@ -6,7 +6,7 @@ const { ccclass, property } = _decorator;
 
 
 @ccclass("AudioController")
-export class AudioController extends Component {     
+export class AudioController extends Component {
 
     // 点击音效
     @property(AudioClip)
@@ -31,27 +31,27 @@ export class AudioController extends Component {
     }
 
     // 播放音乐
-    play () {
+    play() {
         this.backgroud.play();
     }
 
     // 暂停音乐
-    pause () {
+    pause() {
         this.backgroud.pause();
     }
 
     // 音效：点击
-    playClickEffect () {
+    playClickEffect() {
         this.backgroud.playOneShot(this.clipClick, 1);
     }
 
     // 音效：扩建
-    playExtandEffect () {
+    playExtandEffect() {
         this.backgroud.playOneShot(this.clipExtand, 1);
     }
 
     // 音效：收获
-    playGatherEffect () {
+    playGatherEffect() {
         this.backgroud.playOneShot(this.clipGather, 1);
     }
 }
