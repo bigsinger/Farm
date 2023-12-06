@@ -2,3 +2,7 @@
 **/temp
 **/library
 FarmCreator372/profiles/v2/packages/scene.json
+FarmCreator/profiles/v2/editor/packages.json
+FarmCreator/profiles/v2/packages/scene.json
+FarmCreator/settings/v2/packages/cocos-service.json
+FarmCreator/settings/v2/packages/engine.json
