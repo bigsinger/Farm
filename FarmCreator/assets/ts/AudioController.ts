@@ -54,6 +54,13 @@ export class AudioController extends Component {
         resources.load('audio/fireworks', AudioClip, (err, audio) => { if (err) { console.log("load audio error"); error(err.message || err); return; } this.clipFireworks = audio; })
     }
 
+    // 播放音效, filename: 文件名，例如：click（相对于resources/audio的路径）
+    playSound(filename) {
+        resources.load("audio/" + filename, AudioClip, (err, audio) => {
+            this.backgroud.playOneShot(audio);
+        })
+    }
+
     // 播放音乐
     playBGM() {
         this.backgroud.play();
@@ -62,6 +69,11 @@ export class AudioController extends Component {
     // 暂停音乐
     pauseBGM() {
         this.backgroud.pause();
+    }
+
+    // 停止音乐
+    stopBGM() {
+        this.backgroud.stop();
     }
 
     // 音效：点击
