@@ -1,40 +1,57 @@
 // AudioController.ts
 
-import { AudioClip, AudioSource, Component, _decorator } from 'cc';
+import { AudioClip, AudioSource, Component, _decorator, resources, error } from 'cc';
 import { common } from './Common';
 const { ccclass, property } = _decorator;
 
 
 @ccclass("AudioController")
 export class AudioController extends Component {
-
-    // 点击音效
-    @property(AudioClip)
-    public clipClick: AudioClip = null!;
-
-    // 扩展音效
-    @property(AudioClip)
-    public clipExtand: AudioClip = null!;
-    
-    // 铲除音效
-    @property(AudioClip)
-    public clipWipe: AudioClip = null!;
-
-    // 收获音效
-    @property(AudioClip)
-    public clipGather: AudioClip = null!;
-    
-    // 烟花音效
-    @property(AudioClip)
-    public clipFireworks: AudioClip = null!;
-
     // 背景音乐
     @property(AudioSource)
     public backgroud: AudioSource = null!;
 
 
+    // 音效：点击
+    public clipClick: AudioClip = null!;
+
+    // 音效：扩展
+    public clipExtand: AudioClip = null!;
+
+    // 音效：铲除
+    public clipWipe: AudioClip = null!;
+
+    // 音效：收获
+    public clipGather: AudioClip = null!;
+
+    // 音效：烟花
+    public clipFireworks: AudioClip = null!;
+
+
     protected onLoad(): void {
         common.audioController = this;
+
+        // 加载背景音乐
+        // resources.load('audio/bg', AudioClip, (err, audio) => {
+        //     this.backgroud.clip = audio;
+        //     this.backgroud.loop = true;
+        //     this.playBGM();
+        // })
+
+        // 加载音效：点击
+        resources.load('audio/click', AudioClip, (err, audio) => { if (err) { console.log("load audio error"); error(err.message || err); return; } this.clipClick = audio; })
+
+        // 加载音效：扩展
+        resources.load('audio/extand', AudioClip, (err, audio) => { if (err) { console.log("load audio error"); error(err.message || err); return; } this.clipExtand = audio; })
+
+        // 加载音效：铲除
+        resources.load('audio/wipe', AudioClip, (err, audio) => { if (err) { console.log("load audio error"); error(err.message || err); return; } this.clipWipe = audio; })
+        
+        // 加载音效：收获
+        resources.load('audio/gather', AudioClip, (err, audio) => { if (err) { console.log("load audio error"); error(err.message || err); return; } this.clipGather = audio; })
+        
+        // 加载音效：烟花
+        resources.load('audio/fireworks', AudioClip, (err, audio) => { if (err) { console.log("load audio error"); error(err.message || err); return; } this.clipFireworks = audio; })
     }
 
     // 播放音乐

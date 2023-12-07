@@ -27,7 +27,7 @@ export enum CropIdRange {
 }
 
 // 作物配置文件名
-const CropDataResourceName = "crop/crops";   //resources/crop/crops.json
+const CropDataResourceName = "data/crops";   //resources/data/crops.json
 ////////////////////////////////////////////////////////////////
 
 
@@ -352,7 +352,7 @@ export class CropNode extends Node {
     // 收获
     onHarvest(): void {
         if (this.isMature()) {
-            console.log(`作物: " + ${this.crop.CropName}(${this.crop.CropId})  收获了xxx`);
+            console.log(`作物: ${this.crop.CropName}(${this.crop.CropId})  收获了xxx`);
             common.audioController.playSoundGather();   // 播放收获音效
 
             this.HarvestTimes += 1;
@@ -376,7 +376,7 @@ export class CropNode extends Node {
 
     // 设置作物死亡
     private Die(): void {
-        console.log(`作物: " + ${this.crop.CropName}(${this.crop.CropId}) 寿命结束，作物死亡`);
+        console.log(`作物: ${this.crop.CropName}(${this.crop.CropId}) 寿命结束，作物死亡`);
         this.CurrentLifecycleIndex = CropState.Dead;
         this.cropState = CropState.Dead;
     }

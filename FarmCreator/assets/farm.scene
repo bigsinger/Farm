@@ -546,26 +546,6 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "clipClick": {
-      "__uuid__": "94e8bc78-9d92-4d1d-876e-003f9fc1c9de",
-      "__expectedType__": "cc.AudioClip"
-    },
-    "clipExtand": {
-      "__uuid__": "11798476-73c6-4202-8a47-bbfce07a6825",
-      "__expectedType__": "cc.AudioClip"
-    },
-    "clipWipe": {
-      "__uuid__": "97b99b9f-d92f-4f55-a286-507da5e9c835",
-      "__expectedType__": "cc.AudioClip"
-    },
-    "clipGather": {
-      "__uuid__": "99ce7039-cad9-4b5a-a5f0-86431ded507e",
-      "__expectedType__": "cc.AudioClip"
-    },
-    "clipFireworks": {
-      "__uuid__": "31b418e8-8782-4494-a312-92abe925f690",
-      "__expectedType__": "cc.AudioClip"
-    },
     "backgroud": {
       "__id__": 13
     },
