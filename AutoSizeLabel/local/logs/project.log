@@ -1,0 +1,116 @@
+2017-09-06T06:09:27.796Z - normal: Load ~/.CocosCreator/settings.json
+2017-09-06T06:09:27.799Z - normal: checking language setting...
+2017-09-06T06:09:27.799Z - normal: Language: zh
+2017-09-06T06:09:29.176Z - success: protocol editor-framework registered
+2017-09-06T06:09:29.177Z - success: protocol app registered
+2017-09-06T06:09:29.177Z - success: protocol theme registered
+2017-09-06T06:09:29.177Z - success: protocol profile registered
+2017-09-06T06:09:29.177Z - success: protocol packages registered
+2017-09-06T06:09:29.177Z - success: protocol unpack registerred
+2017-09-06T06:09:29.177Z - success: protocol disable-commonjs registerred
+2017-09-06T06:09:29.406Z - normal: connected!
+2017-09-06T06:09:29.415Z - normal: Check project D:\cococococococojs\fitContentLabel
+2017-09-06T06:09:29.423Z - normal: Initializing Cocos2d
+2017-09-06T06:09:29.690Z - normal: Initializing Asset Database
+2017-09-06T06:09:29.711Z - success: protocol uuid registerred
+2017-09-06T06:09:29.711Z - success: protocol db registerred
+2017-09-06T06:09:29.712Z - success: protocol thumbnail registerred
+2017-09-06T06:09:29.712Z - normal: Loading editor/builtin packages
+2017-09-06T06:09:29.817Z - success: assets loaded
+2017-09-06T06:09:29.820Z - success: builder loaded
+2017-09-06T06:09:29.823Z - success: hierarchy loaded
+2017-09-06T06:09:29.825Z - success: inspector loaded
+2017-09-06T06:09:29.828Z - success: keystore loaded
+2017-09-06T06:09:29.830Z - success: node-library loaded
+2017-09-06T06:09:29.831Z - success: preferences loaded
+2017-09-06T06:09:29.842Z - success: project-importer loaded
+2017-09-06T06:09:29.844Z - success: project-settings loaded
+2017-09-06T06:09:29.845Z - success: ui-kit loaded
+2017-09-06T06:09:29.846Z - success: ui-grid loaded
+2017-09-06T06:09:29.848Z - success: scene loaded
+2017-09-06T06:09:29.849Z - success: sprite-editor loaded
+2017-09-06T06:09:29.886Z - success: store loaded
+2017-09-06T06:09:29.890Z - success: timeline loaded
+2017-09-06T06:09:29.891Z - normal: Loading builtin packages
+2017-09-06T06:09:29.893Z - success: anysdk loaded
+2017-09-06T06:09:29.894Z - success: asset-db-debugger loaded
+2017-09-06T06:09:29.895Z - success: code-editor loaded
+2017-09-06T06:09:29.896Z - success: color-picker loaded
+2017-09-06T06:09:29.898Z - success: console loaded
+2017-09-06T06:09:29.899Z - success: package-manager loaded
+2017-09-06T06:09:29.901Z - success: tester loaded
+2017-09-06T06:09:29.902Z - success: ui-kit-preview-extra loaded
+2017-09-06T06:09:29.903Z - success: ui-kit-preview loaded
+2017-09-06T06:09:29.904Z - success: ui-tree loaded
+2017-09-06T06:09:29.946Z - normal: Initializing project D:\cococococococojs\fitContentLabel
+2017-09-06T06:09:29.949Z - normal: Loading packages
+2017-09-06T06:09:29.952Z - normal: Watching packages
+2017-09-06T06:09:29.963Z - normal: Run Application
+2017-09-06T06:09:31.635Z - success: preview server running at http://localhost:7456
+2017-09-06T06:09:31.635Z - normal: Compiling scripts...
+2017-09-06T06:09:33.230Z - normal: Compiled project javascript file successfully
+2017-09-06T06:09:36.312Z - normal: 1.4.2
+2017-09-06T09:04:43.979Z - warn: The Label referenced by component "HelloWorld" is invalid. Detailed information:
+Node path: "Canvas"
+
+2017-09-06T09:04:44.434Z - warn: The Label referenced by component "HelloWorld" is invalid. Detailed information:
+Node path: "Canvas"
+
+2017-09-06T09:04:44.891Z - warn: The Label referenced by component "HelloWorld" is invalid. Detailed information:
+Node path: "Canvas"
+
+2017-09-06T09:04:45.105Z - warn: The Label referenced by component "HelloWorld" is invalid. Detailed information:
+Node path: "Canvas"
+
+2017-09-06T09:04:45.287Z - warn: The Label referenced by component "HelloWorld" is invalid. Detailed information:
+Node path: "Canvas"
+
+2017-09-06T09:04:45.472Z - warn: The Label referenced by component "HelloWorld" is invalid. Detailed information:
+Node path: "Canvas"
+
+2017-09-06T09:24:01.594Z - normal: Compiled project javascript file successfully
+2017-09-06T09:25:08.171Z - error: Failed to update asset db://assets/Script/HelloWorld.js, messages: Compile error: SyntaxError: unknown: Unexpected token, expected , (14:8)
+  12 |         }
+  13 |         // defaults, set visually when attaching this script to the Canvas
+> 14 |         text: 'Hello, World!'
+     |         ^
+  15 |     },
+  16 | 
+  17 |     // use this for initialization
+    at Parser.pp$5.raise (D:\CocosCreator\resources\app.asar\node_modules\babylon\lib\index.js:4373:13)
+    at Parser.pp.unexpected (D:\CocosCreator\resources\app.asar\node_modules\babylon\lib\index.js:1716:8)
+    at Parser.pp.expect (D:\CocosCreator\resources\app.asar\node_modules\babylon\lib\index.js:1704:33)
+    at Parser.pp$3.parseObj (D:\CocosCreator\resources\app.asar\node_modules\babylon\lib\index.js:3898:12)
+    at Parser.pp$3.parseExprAtom (D:\CocosCreator\resources\app.asar\node_modules\babylon\lib\index.js:3652:19)
+    at Parser.pp$3.parseExprSubscripts (D:\CocosCreator\resources\app.asar\node_modules\babylon\lib\index.js:3427:19)
+    at Parser.pp$3.parseMaybeUnary (D:\CocosCreator\resources\app.asar\node_modules\babylon\lib\index.js:3407:19)
+    at Parser.pp$3.parseExprOps (D:\CocosCreator\resources\app.asar\node_modules\babylon\lib\index.js:3337:19)
+    at Parser.pp$3.parseMaybeConditional (D:\CocosCreator\resources\app.asar\node_modules\babylon\lib\index.js:3314:19)
+    at Parser.pp$3.parseMaybeAssign (D:\CocosCreator\resources\app.asar\node_modules\babylon\lib\index.js:3277:19)
+    at e.AssetDB.error (D:\CocosCreator\resources\app.asar\asset-db\lib\utils.js:1:2582)
+    at Object.callback (D:\CocosCreator\resources\app.asar\asset-db\core\ipc.js:1:449)
+    at D:\CocosCreator\resources\app.asar\node_modules\async\lib\async.js:906:35
+    at _arrayEach (D:\CocosCreator\resources\app.asar\node_modules\async\lib\async.js:85:13)
+    at D:\CocosCreator\resources\app.asar\node_modules\async\lib\async.js:898:17
+    at D:\CocosCreator\resources\app.asar\node_modules\async\lib\async.js:44:16
+    at e.<anonymous> (D:\CocosCreator\resources\app.asar\asset-db\index.js:1:1683)
+    at D:\CocosCreator\resources\app.asar\asset-db\lib\tasks.js:1:22614
+    at D:\CocosCreator\resources\app.asar\node_modules\async\lib\async.js:52:16
+2017-09-06T09:25:17.853Z - normal: Compiled project javascript file successfully
+2017-09-06T09:25:17.922Z - warn: The 'type' attribute of 'HelloWorld.editText' is undefined when loading script
+2017-09-06T09:25:50.497Z - normal: Compiled project javascript file successfully
+2017-09-06T09:25:50.558Z - warn: The 'type' attribute of 'HelloWorld.editText' is undefined when loading script
+2017-09-06T09:25:59.479Z - normal: Compiled project javascript file successfully
+2017-09-06T09:25:59.533Z - warn: The 'type' attribute of 'HelloWorld.editText' is undefined when loading script
+2017-09-06T09:28:32.013Z - normal: Compiled project javascript file successfully
+2017-09-06T09:28:32.096Z - warn: The 'type' attribute of 'HelloWorld.editText' is undefined when loading script
+2017-09-07T06:15:40.087Z - normal: Compiled project javascript file successfully
+2017-09-07T06:16:58.824Z - normal: Compiled project javascript file successfully
+2017-09-07T06:17:56.516Z - normal: Compiled project javascript file successfully
+2017-09-07T06:20:34.830Z - normal: Compiled project javascript file successfully
+2017-09-07T06:20:44.852Z - normal: Compiled project javascript file successfully
+2017-09-07T06:20:52.220Z - normal: Compiled project javascript file successfully
+2017-09-07T06:21:23.673Z - normal: Compiled project javascript file successfully
+2017-09-07T06:21:53.680Z - normal: Compiled project javascript file successfully
+2017-09-07T06:24:30.382Z - normal: Compiled project javascript file successfully
+2017-09-07T06:30:56.909Z - normal: Compiled project javascript file successfully
