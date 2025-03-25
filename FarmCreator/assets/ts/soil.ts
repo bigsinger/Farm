@@ -78,8 +78,9 @@ export class Soil extends Component {
         common.cropAtlas = this.cropAtlas;
         this.ContentWidth = this.node.getComponent(UITransform).width;
         this.ContentHeight = this.node.getComponent(UITransform).height;
-        this.OffsetX = (this.ContentWidth / 2) - 110;
-        this.OffsetY = (this.ContentHeight / 2) - 50;
+
+        this.OffsetX = (this.ContentWidth - this.mapNode.getTileSize().x) / 2;
+        this.OffsetY = (this.ContentHeight - this.mapNode.getTileSize().y) / 2;
 
         this.initLands();
         var gid = this.soilLayer.getTileGIDAt(0, 1);

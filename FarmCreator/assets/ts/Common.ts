@@ -19,7 +19,7 @@ export class Common {
 
     // 现实世界的时间转化为游戏时间：天 -> 分钟
     public static RealTimeToGameTime(day: number): number {
-        return day / 140;    // 测试时可以调大比例
+        return day / 60;    // 测试时可以将分母调大，例如：140
     }
 }
 export let common: Common = new Common();
