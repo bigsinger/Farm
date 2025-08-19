@@ -78,18 +78,12 @@ export class CropData {
     // 生命周期数组
     public Lifecycles: CropLifecycle[] = [];
 
-    // 是否初始化的标志
-    public static IsInit: boolean = false;
-
     // 全部作物数据
     public static AllCrops: CropData[] = [];
 
     constructor(CropId: number) {
-        if (CropData.IsInit == false) {
-            CropData.deserializeAll();
-            CropData.IsInit = true;
-        }
-
+        console.log("CropData constructor");
+        //console.trace();
         if (CropId > 0) {
             this.CropId = CropId;
             this.initCropLifecycleFromId(CropId);
@@ -131,25 +125,21 @@ export class CropData {
 
     // 从json数据反序列化所有作物数据
     // 读取json资源：https://docs.cocos.com/creator/manual/zh/asset/json.html
-    public static deserializeAll(): void {
-        console.log("load crop data...");
-        resources.load(CropDataResourceName, (err: any, res: JsonAsset) => {
-            if (err) {
-                console.log("load crop data error");
-                error(err.message || err);
-                return;
-            }
-            // 获取到 Json 数据
-            const jsonData: any = res.json!;
+    public static async deserializeAll(): Promise<void> {
+        //console.log("load crop data...");
+
+        const asset = await Common.loadResourceAsync<JsonAsset>(CropDataResourceName, JsonAsset);
+        if (asset != null) {
+            const jsonData: any = asset.json!;
             for (var i = 0; i < jsonData.length; i++) {
                 CropData.AllCrops.push(CropData.deserializeOne(jsonData[i]));
             }
             console.log("load crop data ok");
-        })
+        } else {
+            console.log("load crop data error");
+        }
     }
 }
-
-let cropsData: CropData = new CropData(0);
 
 
 @ccclass('CropNode')

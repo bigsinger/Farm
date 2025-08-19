@@ -54,7 +54,6 @@ export class Soil extends Component {
     private ExtendBrandTileX: number = 0;
     private ExtendBrandTileY: number = 0;
 
-    private self: Component = null;
 
     // 位置偏移
     private OffsetX: number = 0;
@@ -74,7 +73,6 @@ export class Soil extends Component {
         }
         //////////////////////////////////
 
-        this.self = this;
         common.cropAtlas = this.cropAtlas;
         this.ContentWidth = this.node.getComponent(UITransform).width;
         this.ContentHeight = this.node.getComponent(UITransform).height;
@@ -83,7 +81,7 @@ export class Soil extends Component {
         this.OffsetY = (this.ContentHeight - this.mapNode.getTileSize().y) / 2;
 
         this.initLands();
-        var gid = this.soilLayer.getTileGIDAt(0, 1);
+        //var gid = this.soilLayer.getTileGIDAt(0, 1);
 
         let layer: TiledLayer = this.soilLayer;
         let layerSize = layer.getLayerSize();

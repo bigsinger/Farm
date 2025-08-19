@@ -1,4 +1,4 @@
-import { _decorator, AudioClip, AudioSource, Component, TiledMap, TiledLayer, SpriteAtlas, Vec2, Node, Vec3, UITransform, UIOpacity, TiledObjectGroup, Sprite, SpriteFrame, } from 'cc';
+import { _decorator, SpriteAtlas, resources, Asset, } from 'cc';
 import { AudioController } from './AudioController';
 const { ccclass, property } = _decorator;
 
@@ -21,9 +21,29 @@ export class Common {
     public static RealTimeToGameTime(day: number): number {
         return day / 60;    // 测试时可以将分母调大，例如：140
     }
+
+    /**
+     * @method loadResourceAsync
+     * @description 异步加载资源。
+     * @param {string} path - 资源路径。
+     * @param {typeof Asset | null} type - 资源类型。
+     * @returns {Promise<T>} 返回加载的资源。
+     */
+    public static async loadResourceAsync<T extends Asset>(path: string, type: typeof Asset | null): Promise<any> {
+        return new Promise((resolve, reject) => {
+            resources.load(path, type, (err, asset) => {
+                if (err) {
+                    console.error(`资源加载失败 ${path}：`, err);
+                    resolve(null);
+                    // reject(err);
+                } else {
+                    resolve(asset);
+                }
+            });
+        });
+    }
 }
 export let common: Common = new Common();
-
 
 
 @ccclass('NaturalEnv')

@@ -1,6 +1,9 @@
 {
   "__version__": "1.0.0",
   "panel": {
-    "filterType": "error"
+    "filterType": "error",
+    "filterTypes": [
+      "error"
+    ]
   }
 }

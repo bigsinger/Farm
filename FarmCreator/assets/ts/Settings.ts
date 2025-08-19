@@ -11,7 +11,6 @@ export class Settings extends Component {
 
     protected onLoad(): void {
         Settings.instance = this;
-
     }
 
     // 音效开关
