@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, Color, Graphics, UITransform, Size, Mask, ScrollView, Layout, Button, Scrollbar } from 'cc';
+import { _decorator, Component, Node, Label, Color, Graphics, Sprite, UITransform, Size, Mask, ScrollView, Layout, Button, ScrollBar } from 'cc';
 import { TaskManager, TaskData, TaskStatus, TaskType } from './TaskManager';
 import { eventBus, GameEvent } from './EventBus';
 const { ccclass } = _decorator;
@@ -297,14 +297,15 @@ export class UITaskPanel extends Component {
         const sbNode = new Node('sb');
         sbNode.addComponent(UITransform).setContentSize(6, h);
         sbNode.setPosition(w / 2 - 8, 0, 0);
-        const sb = sbNode.addComponent(Scrollbar);
-        sb.handle = new Node('h');
-        sb.handle.addComponent(UITransform).setContentSize(6, 50);
-        const hg = sb.handle.addComponent(Graphics);
+        const sb = sbNode.addComponent(ScrollBar);
+        const handleNode = new Node('h');
+        sb.handle = handleNode.addComponent(Sprite);
+        handleNode.addComponent(UITransform).setContentSize(6, 50);
+        const hg = handleNode.addComponent(Graphics);
         hg.fillColor = new Color(160, 130, 80, 200);
         hg.roundRect(-3, -25, 6, 50, 3);
         hg.fill();
-        sbNode.addChild(sb.handle);
+        sbNode.addChild(handleNode);
         sv.verticalScrollBar = sb;
         svNode.addChild(sbNode);
 

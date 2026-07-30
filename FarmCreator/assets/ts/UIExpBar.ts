@@ -11,10 +11,10 @@ const { ccclass, property } = _decorator;
 @ccclass('UIExpBar')
 export class UIExpBar extends Component {
 
-    @property(Number)
+    @property
     barWidth: number = 260;
 
-    @property(Number)
+    @property
     barHeight: number = 28;
 
     private _levelLabel: Label = null;
@@ -56,7 +56,7 @@ export class UIExpBar extends Component {
         const barUI = this._barNode.addComponent(UITransform);
         barUI.setContentSize(0, H - 4);
         this._barNode.setPosition(-W / 2 + 2, 0, 0);
-        this._barNode.setAnchorPoint(0, 0.5);
+        barUI.setAnchorPoint(0, 0.5);
         this._barFill = this._barNode.addComponent(Graphics);
         this.node.addChild(this._barNode);
 
@@ -119,10 +119,10 @@ export class UIExpBar extends Component {
         const data = this._expSystem.getPlayerData();
         this._levelLabel.string = `Lv${data.level}`;
 
-        const ratio = data.nextLevelExp > 0
-            ? Math.min(data.currentExp / data.nextLevelExp, 1)
+        const ratio = data.expToNextLevel > 0
+            ? Math.min(data.currentExp / data.expToNextLevel, 1)
             : 1;
-        this._expLabel.string = `${data.currentExp} / ${data.nextLevelExp}`;
+        this._expLabel.string = `${data.currentExp} / ${data.expToNextLevel}`;
 
         // 更新填充条
         if (this._barFill && this._barNode) {

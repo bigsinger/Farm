@@ -1,6 +1,6 @@
-import { _decorator, Component, game, find, Node, Layers } from 'cc';
+import { _decorator, Component, find, Node, Layers } from 'cc';
 import { eventBus, GameEvent } from './EventBus';
-const { ccclass, property } = _decorator;
+const { ccclass } = _decorator;
 
 /**
  * 仓库物品数据
@@ -23,7 +23,7 @@ export interface WarehouseItem {
  */
 @ccclass('WarehouseManager')
 export class WarehouseManager extends Component {
-    private static _instance: WarehouseManager = null;
+    private static _instance: WarehouseManager | null = null;
     
     /** 仓库物品列表 */
     private _items: Map<number, WarehouseItem> = new Map();
@@ -72,11 +72,9 @@ export class WarehouseManager extends Component {
     onLoad() {
         if (WarehouseManager._instance === null) {
             WarehouseManager._instance = this;
-            game.addPersistRootNode(this.node);
             this.loadWarehouse();
         } else if (WarehouseManager._instance !== this) {
-            // 只有当实例不是当前组件时才销毁
-            this.destroy();
+            this.node.destroy();
         }
     }
     
@@ -116,8 +114,8 @@ export class WarehouseManager extends Component {
      * @returns 存入后的总数量
      */
     public storeCrop(cropId: number, cropName: string, sellPrice: number, count: number = 1): number {
-        if (count <= 0) {
-            console.warn('[WarehouseManager] 存入数量必须大于0');
+        if (!Number.isInteger(count) || count <= 0) {
+            console.warn('[WarehouseManager] 存入数量必须是正整数');
             return 0;
         }
         
@@ -158,8 +156,8 @@ export class WarehouseManager extends Component {
             count = item.count;
         }
         
-        if (count <= 0) {
-            console.warn('[WarehouseManager] 出售数量必须大于0');
+        if (!Number.isInteger(count) || count <= 0) {
+            console.warn('[WarehouseManager] 出售数量必须是正整数');
             return 0;
         }
         
@@ -193,7 +191,7 @@ export class WarehouseManager extends Component {
      */
     public removeCrop(cropId: number, count: number = 1, reason: string = 'consume'): boolean {
         const item = this._items.get(cropId);
-        if (!item || count <= 0 || item.count < count) {
+        if (!item || !Number.isInteger(count) || count <= 0 || item.count < count) {
             return false;
         }
 
@@ -263,7 +261,9 @@ export class WarehouseManager extends Component {
     public setItems(items: WarehouseItem[]): void {
         this._items.clear();
         for (const item of items) {
-            this._items.set(item.cropId, item);
+            if (!this.isValidItem(item)) continue;
+            // 拷贝数据，避免存档对象在外部被修改后间接改变仓库内部状态。
+            this._items.set(item.cropId, { ...item });
         }
         this.saveWarehouse();
         this.emitWarehouseChanged();
@@ -299,9 +299,14 @@ export class WarehouseManager extends Component {
         try {
             const dataStr = localStorage.getItem(this.WAREHOUSE_KEY);
             if (dataStr) {
-                const data: WarehouseItem[] = JSON.parse(dataStr);
+                const data = JSON.parse(dataStr);
+                if (!Array.isArray(data)) {
+                    throw new Error('仓库数据必须是数组');
+                }
                 for (const item of data) {
-                    this._items.set(item.cropId, item);
+                    if (this.isValidItem(item)) {
+                        this._items.set(item.cropId, { ...item });
+                    }
                 }
                 console.log(`[WarehouseManager] 加载仓库: ${data.length} 种作物, 总数量: ${this.getTotalItemCount()}`);
             } else {
@@ -319,5 +324,16 @@ export class WarehouseManager extends Component {
     private emitWarehouseChanged(): void {
         // 通过EventBus全局发布
         eventBus.emit(GameEvent.WAREHOUSE_CHANGED, { items: this.getAllItems(), totalValue: this.getTotalValue() });
+    }
+
+    /** 本地存储可以被手工修改，恢复前先过滤非法或负数库存。 */
+    private isValidItem(item: any): item is WarehouseItem {
+        return item
+            && Number.isInteger(item.cropId)
+            && typeof item.cropName === 'string'
+            && Number.isInteger(item.count)
+            && item.count > 0
+            && Number.isFinite(item.sellPrice)
+            && item.sellPrice >= 0;
     }
 }

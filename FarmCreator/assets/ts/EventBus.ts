@@ -1,4 +1,5 @@
 import { EventTarget } from 'cc';
+import { DEBUG } from 'cc/env';
 
 /**
  * 游戏事件类型
@@ -88,11 +89,14 @@ export interface EventData {
 /**
  * 全局事件总线
  * 用于解耦游戏各组件之间的通信
+ *
+ * 例如收获系统只负责发送 CROP_HARVESTED，仓库、任务、成就和存档系统
+ * 可以各自订阅该事件，无需让 Crop 直接引用所有下游模块。
  */
 class EventBus {
     private _eventTarget: EventTarget = new EventTarget();
     private _eventHistory: EventData[] = [];
-    private _maxHistorySize: number = 100;
+    private readonly _maxHistorySize: number = 100;
     
     /**
      * 发送事件
@@ -104,17 +108,15 @@ class EventBus {
             timestamp: Date.now(),
         };
         
-        // 记录事件历史
-        this._eventHistory.push(eventData);
-        if (this._eventHistory.length > this._maxHistorySize) {
-            this._eventHistory.shift();
-        }
-        
         // 触发事件
         this._eventTarget.emit(event, data);
         
-        // 调试输出
-        if (CC_DEBUG) {
+        // 历史记录只服务于教学调试；发布环境不保存，避免每次事件产生额外数组操作。
+        if (DEBUG) {
+            this._eventHistory.push(eventData);
+            if (this._eventHistory.length > this._maxHistorySize) {
+                this._eventHistory.shift();
+            }
             console.log(`[EventBus] ${event}`, data);
         }
     }
@@ -161,7 +163,8 @@ class EventBus {
      * 移除所有监听器
      */
     public removeAllListeners(): void {
-        this._eventTarget.removeAll();
+        // EventTarget 没有统一的 removeAll API，替换容器最直接也最不易漏掉事件。
+        this._eventTarget = new EventTarget();
     }
 }
 

@@ -12,16 +12,6 @@ interface FriendInfo {
     isOnline?: boolean;
 }
 
-/** 引导步骤定义 */
-interface TutorialStepDef {
-    id: string;
-    title: string;
-    description: string;
-    action: string;
-    targetEvent?: string;
-    panelName?: string;
-}
-
 /** 天气类型 */
 type WeatherType = 'sunny' | 'cloudy' | 'rainy' | 'windy' | 'snowy' | 'foggy';
 

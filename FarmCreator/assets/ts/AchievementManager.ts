@@ -1,4 +1,4 @@
-import { _decorator, Component, game, EventTarget } from 'cc';
+import { _decorator, Component, EventTarget } from 'cc';
 import { eventBus, GameEvent } from './EventBus';
 const { ccclass, property } = _decorator;
 
@@ -95,7 +95,6 @@ export class AchievementManager extends Component {
     onLoad() {
         if (AchievementManager._instance === null) {
             AchievementManager._instance = this;
-            game.addPersistRootNode(this.node);
             this._initAchievements();
             this._loadData();
             this._registerEventListeners();

@@ -1,4 +1,4 @@
-import { _decorator, Component, find, game, Layers, Node } from 'cc';
+import { _decorator, Component, find, Layers, Node } from 'cc';
 import { CropData } from './Crop';
 import { CurrencySystem } from './CurrencySystem';
 import { WarehouseManager } from './WarehouseManager';
@@ -60,7 +60,6 @@ export class MarketOrderManager extends Component {
     onLoad() {
         if (MarketOrderManager._instance === null) {
             MarketOrderManager._instance = this;
-            game.addPersistRootNode(this.node);
             this.loadOrders();
             this.refreshOrdersIfNeeded();
             console.log('[MarketOrderManager] 初始化完成');

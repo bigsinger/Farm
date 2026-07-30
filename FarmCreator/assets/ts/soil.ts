@@ -148,7 +148,7 @@ export class Soil extends Component {
             cropNode.setPosition(tilePos.x - this.OffsetX, tilePos.y - this.OffsetY);
 
             // 更新精灵到对应生长阶段
-            cropNode.updateSprite();
+            cropNode.updateSpriteFrame();
         }
 
         console.log(`[Soil] 从存档恢复 ${cropsData.length} 个作物`);

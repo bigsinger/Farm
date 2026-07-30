@@ -1,4 +1,4 @@
-import { _decorator, Component, game, EventTarget } from 'cc';
+import { _decorator, Component, EventTarget } from 'cc';
 import { eventBus, GameEvent } from './EventBus';
 const { ccclass, property } = _decorator;
 
@@ -64,7 +64,6 @@ export class ExpSystem extends Component {
     onLoad() {
         if (ExpSystem._instance === null) {
             ExpSystem._instance = this;
-            game.addPersistRootNode(this.node);
             this._initLevelConfigs();
             this._loadData();
             this._registerEventListeners();

@@ -1,4 +1,4 @@
-import { _decorator, Component, game, EventTarget } from 'cc';
+import { _decorator, Component, EventTarget } from 'cc';
 import { eventBus, GameEvent } from './EventBus';
 const { ccclass, property } = _decorator;
 
@@ -98,7 +98,6 @@ export class TaskManager extends Component {
     onLoad() {
         if (TaskManager._instance === null) {
             TaskManager._instance = this;
-            game.addPersistRootNode(this.node);
             this._loadTasks();
             this._generateDailyTasks();
             this._registerEventListeners();

@@ -4,7 +4,12 @@
 
   /* Add your custom configuration here. */
   "compilerOptions": {
-    "strict": false
+    "strict": false,
+    "skipLibCheck": true,
+    "lib": [
+      "ES2019",
+      "DOM"
+    ]
   },
   "exclude": [
     "assets/resources/map/*.tsx"

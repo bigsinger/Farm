@@ -3,6 +3,15 @@ import { eventBus, GameEvent } from './EventBus';
 
 const { ccclass, property } = _decorator;
 
+export interface TutorialStepDef {
+    id: string;
+    title: string;
+    description: string;
+    action: string;
+    targetEvent?: GameEvent;
+    panelName?: string;
+}
+
 /**
  * 新手引导管理器
  * 

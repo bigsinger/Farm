@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, Color, Sprite, UITransform, UIOpacity, tween, ScrollView, Layout, Scrollbar, Mask, Graphics, Vec2, Size } from 'cc';
+import { _decorator, Component, Node, Label, Color, Sprite, UITransform, UIOpacity, tween, ScrollView, Layout, ScrollBar, Mask, Graphics, Vec2, Size } from 'cc';
 import { AchievementManager, AchievementData, AchievementLevel } from './AchievementManager';
 import { eventBus, GameEvent } from './EventBus';
 const { ccclass, property } = _decorator;
@@ -257,15 +257,17 @@ export class UIAchievementPanel extends Component {
         const sbUI = sbNode.addComponent(UITransform);
         sbUI.setContentSize(8, h);
         sbNode.setPosition(w / 2 - 10, 0, 0);
-        const sb = sbNode.addComponent(Scrollbar);
-        sb.handle = new Node('handle');
-        const hUI = sb.handle.addComponent(UITransform);
+        const sb = sbNode.addComponent(ScrollBar);
+        const handleNode = new Node('handle');
+        const handleSprite = handleNode.addComponent(Sprite);
+        sb.handle = handleSprite;
+        const hUI = handleNode.addComponent(UITransform);
         hUI.setContentSize(8, 60);
-        const hGfx = sb.handle.addComponent(Graphics);
+        const hGfx = handleNode.addComponent(Graphics);
         hGfx.fillColor = new Color(160, 130, 80, 200);
         hGfx.roundRect(-4, -30, 8, 60, 4);
         hGfx.fill();
-        sbNode.addChild(sb.handle);
+        sbNode.addChild(handleNode);
         sv.verticalScrollBar = sb;
         svNode.addChild(sbNode);
 

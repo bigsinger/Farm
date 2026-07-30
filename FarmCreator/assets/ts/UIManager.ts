@@ -1,18 +1,19 @@
-import { _decorator, Component, Node, Prefab, instantiate, Label, director, Canvas, Layers, find } from 'cc';
-import { common } from './Common';
+import { _decorator, Component, Node, Layers, find, Label, Sprite, UITransform } from 'cc';
 import { UISimplePanel } from './UISimplePanel';
 import { UIFriendsPanel } from './UIFriendsPanel';
 import { UITutorial } from './UITutorial';
 import { eventBus, GameEvent } from './EventBus';
 import { AnimationSystem } from './AnimationSystem';
-const { ccclass, property } = _decorator;
+import { CurrencySystem } from './CurrencySystem';
+import { ExpSystem } from './ExpSystem';
+const { ccclass } = _decorator;
 
 /**
  * UI管理器 - 统一管理游戏中的UI面板
  */
 @ccclass('UIManager')
 export class UIManager extends Component {
-    private static instance: UIManager = null;
+    private static instance: UIManager | null = null;
 
     // 当前打开的面板
     private currentShopPanel: Node = null;
@@ -30,6 +31,11 @@ export class UIManager extends Component {
 
         // 监听UI关闭事件
         eventBus.on(GameEvent.UI_CLOSE, this.onUIClose, this);
+        // 主界面信息牌原先只有静态标题，这里把它接到真实经济/等级数据。
+        eventBus.on(GameEvent.GOLD_CHANGED, this.refreshStatusBand, this);
+        eventBus.on(GameEvent.EXP_GAINED, this.refreshStatusBand, this);
+        eventBus.on(GameEvent.LEVEL_UP, this.refreshStatusBand, this);
+        this.refreshStatusBand();
 
         console.log('[UIManager] 初始化完成');
     }
@@ -39,6 +45,74 @@ export class UIManager extends Component {
             UIManager.instance = null;
         }
         eventBus.off(GameEvent.UI_CLOSE, this.onUIClose, this);
+        eventBus.off(GameEvent.GOLD_CHANGED, this.refreshStatusBand, this);
+        eventBus.off(GameEvent.EXP_GAINED, this.refreshStatusBand, this);
+        eventBus.off(GameEvent.LEVEL_UP, this.refreshStatusBand, this);
+    }
+
+    /**
+     * 刷新主界面右上角的信息牌。
+     *
+     * 信息牌节点来自 MainScene，系统组件由 GameManager 动态创建。把两者的绑定
+     * 收口在 UIManager 中，可以避免 CurrencySystem/ExpSystem 反向依赖具体场景结构。
+     */
+    private refreshStatusBand(): void {
+        const band = find('Canvas/bandLayer/band');
+        const currency = CurrencySystem.getInstance();
+        const expSystem = ExpSystem.getInstance();
+        if (!band || !currency || !expSystem) return;
+
+        const player = expSystem.getPlayerData();
+        const ratio = player.expToNextLevel > 0
+            ? Math.min(Math.max(player.currentExp / player.expToNextLevel, 0), 1)
+            : 1;
+
+        const setText = (nodeName: string, value: string): void => {
+            const textNode = band.getChildByName(nodeName);
+            const label = textNode?.getComponent(Label);
+            const transform = textNode?.getComponent(UITransform);
+            if (!textNode || !label || !transform) return;
+
+            // 场景里旧标签只有 42px，拼接数值后会被 CLAMP 截断；运行时扩展到木牌安全区。
+            transform.setContentSize(150, 22);
+            textNode.setPosition(-1, textNode.position.y, textNode.position.z);
+            label.horizontalAlign = Label.HorizontalAlign.LEFT;
+            label.string = value;
+        };
+
+        setText('gold', `金币：${currency.gold}`);
+        setText('level', `等级：${player.level}`);
+        setText('exp', `经验：${player.currentExp}/${player.expToNextLevel}`);
+
+        // 旧场景中的 ProgressBar 没有绑定 barSprite，直接使用填充精灵可稳定显示进度。
+        const expProgress = band.getChildByName('exp_progress');
+        const expSprite = expProgress?.getComponent(Sprite);
+        if (expProgress && expSprite) {
+            // 文本已显示精确值，进度条下移一行，避免再与经验数字重叠。
+            expProgress.setPosition(0, -44, expProgress.position.z);
+            expSprite.type = Sprite.Type.FILLED;
+            expSprite.fillType = Sprite.FillType.HORIZONTAL;
+            expSprite.fillStart = 0;
+            expSprite.fillRange = ratio;
+        }
+    }
+
+    /**
+     * 统一播放面板关闭动画。
+     *
+     * 调用方必须先把 currentXxxPanel 置空，再进入这里。这样即使用户在关闭动画
+     * 尚未结束时再次打开同类面板，旧动画回调也只会销毁旧节点，不会误伤新面板。
+     */
+    private destroyPanelWithAnimation(panel: Node, panelName: string): void {
+        const animSystem = AnimationSystem.getInstance();
+        if (animSystem) {
+            animSystem.playPanelClose(panel, () => {
+                if (panel.isValid) panel.destroy();
+            });
+        } else if (panel.isValid) {
+            panel.destroy();
+        }
+        console.log(`[UIManager] ${panelName}面板已关闭`);
     }
 
     /**
@@ -147,21 +221,11 @@ export class UIManager extends Component {
      * 关闭商店面板
      */
     public closeShopPanel() {
-        if (this.currentShopPanel) {
-            const animSystem = AnimationSystem.getInstance();
-            if (animSystem) {
-                animSystem.playPanelClose(this.currentShopPanel, () => {
-                    if (this.currentShopPanel) {
-                        this.currentShopPanel.destroy();
-                        this.currentShopPanel = null;
-                    }
-                });
-            } else {
-                this.currentShopPanel.destroy();
-                this.currentShopPanel = null;
-            }
-            console.log('[UIManager] 商店面板已关闭');
-            eventBus.emit(GameEvent.UI_CLOSE, { panel: 'shop' });
+        const panel = this.currentShopPanel;
+        if (panel) {
+            // 先清引用再异步销毁，避免快速连点造成生命周期竞争。
+            this.currentShopPanel = null;
+            this.destroyPanelWithAnimation(panel, '商店');
         }
     }
 
@@ -211,21 +275,10 @@ export class UIManager extends Component {
      * 关闭仓库面板
      */
     public closeWarehousePanel() {
-        if (this.currentWarehousePanel) {
-            const animSystem = AnimationSystem.getInstance();
-            if (animSystem) {
-                animSystem.playPanelClose(this.currentWarehousePanel, () => {
-                    if (this.currentWarehousePanel) {
-                        this.currentWarehousePanel.destroy();
-                        this.currentWarehousePanel = null;
-                    }
-                });
-            } else {
-                this.currentWarehousePanel.destroy();
-                this.currentWarehousePanel = null;
-            }
-            console.log('[UIManager] 仓库面板已关闭');
-            eventBus.emit(GameEvent.UI_CLOSE, { panel: 'warehouse' });
+        const panel = this.currentWarehousePanel;
+        if (panel) {
+            this.currentWarehousePanel = null;
+            this.destroyPanelWithAnimation(panel, '仓库');
         }
     }
 
@@ -276,20 +329,10 @@ export class UIManager extends Component {
      * 关闭存档面板
      */
     public closeSavePanel() {
-        if (this.currentSavePanel) {
-            const animSystem = AnimationSystem.getInstance();
-            if (animSystem) {
-                animSystem.playPanelClose(this.currentSavePanel, () => {
-                    if (this.currentSavePanel) {
-                        this.currentSavePanel.destroy();
-                        this.currentSavePanel = null;
-                    }
-                });
-            } else {
-                this.currentSavePanel.destroy();
-                this.currentSavePanel = null;
-            }
-            console.log('[UIManager] 存档面板已关闭');
+        const panel = this.currentSavePanel;
+        if (panel) {
+            this.currentSavePanel = null;
+            this.destroyPanelWithAnimation(panel, '存档');
         }
     }
 
@@ -333,21 +376,10 @@ export class UIManager extends Component {
      * 关闭好友面板
      */
     public closeFriendsPanel() {
-        if (this.currentFriendsPanel) {
-            const animSystem = AnimationSystem.getInstance();
-            if (animSystem) {
-                animSystem.playPanelClose(this.currentFriendsPanel, () => {
-                    if (this.currentFriendsPanel) {
-                        this.currentFriendsPanel.destroy();
-                        this.currentFriendsPanel = null;
-                    }
-                });
-            } else {
-                this.currentFriendsPanel.destroy();
-                this.currentFriendsPanel = null;
-            }
-            console.log('[UIManager] 好友面板已关闭');
-            eventBus.emit(GameEvent.UI_CLOSE, { panel: 'friends' });
+        const panel = this.currentFriendsPanel;
+        if (panel) {
+            this.currentFriendsPanel = null;
+            this.destroyPanelWithAnimation(panel, '好友');
         }
     }
 
@@ -387,20 +419,10 @@ export class UIManager extends Component {
      * 关闭新手引导面板
      */
     public closeTutorialPanel() {
-        if (this.currentTutorialPanel) {
-            const animSystem = AnimationSystem.getInstance();
-            if (animSystem) {
-                animSystem.playPanelClose(this.currentTutorialPanel, () => {
-                    if (this.currentTutorialPanel) {
-                        this.currentTutorialPanel.destroy();
-                        this.currentTutorialPanel = null;
-                    }
-                });
-            } else {
-                this.currentTutorialPanel.destroy();
-                this.currentTutorialPanel = null;
-            }
-            console.log('[UIManager] 新手引导面板已关闭');
+        const panel = this.currentTutorialPanel;
+        if (panel) {
+            this.currentTutorialPanel = null;
+            this.destroyPanelWithAnimation(panel, '新手引导');
         }
     }
 }

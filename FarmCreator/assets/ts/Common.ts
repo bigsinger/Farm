@@ -1,6 +1,6 @@
-import { _decorator, SpriteAtlas, resources, Asset, } from 'cc';
+import { _decorator, SpriteAtlas, resources, Asset } from 'cc';
 import { AudioController } from './AudioController';
-const { ccclass, property } = _decorator;
+const { ccclass } = _decorator;
 
 // https://blog.csdn.net/m0_66016308/article/details/129282746
 // 全局变量/通用配置
@@ -27,23 +27,25 @@ export class Common {
      * @description 异步加载资源。
      * @param {string} path - 资源路径。
      * @param {typeof Asset | null} type - 资源类型。
-     * @returns {Promise<T>} 返回加载的资源。
+     * @returns 返回指定类型资源；加载失败时返回 null，由启动流程统一处理。
      */
-    public static async loadResourceAsync<T extends Asset>(path: string, type: typeof Asset | null): Promise<any> {
-        return new Promise((resolve, reject) => {
+    public static async loadResourceAsync<T extends Asset>(
+        path: string,
+        type: typeof Asset | null,
+    ): Promise<T | null> {
+        return new Promise((resolve) => {
             resources.load(path, type, (err, asset) => {
                 if (err) {
                     console.error(`资源加载失败 ${path}：`, err);
                     resolve(null);
-                    // reject(err);
                 } else {
-                    resolve(asset);
+                    resolve(asset as T);
                 }
             });
         });
     }
 }
-export let common: Common = new Common();
+export const common: Common = new Common();
 
 
 @ccclass('NaturalEnv')

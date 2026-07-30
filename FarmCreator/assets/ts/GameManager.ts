@@ -1,4 +1,4 @@
-import { _decorator, Component, director, find, Node, Label, Color, UITransform, Graphics, tween, UIOpacity, Layers, Widget, resources, SpriteAtlas, Sprite, SpriteFrame, Animation, AnimationClip, Vec3 } from 'cc';
+import { _decorator, Component, director, find, game, Node, Label, Color, UITransform, Graphics, tween, UIOpacity, Layers, Widget, resources, SpriteAtlas, Sprite, SpriteFrame, Animation, AnimationClip, Vec3 } from 'cc';
 import { CropData } from './Crop';
 import { UIManager } from './UIManager';
 import { CurrencySystem } from './CurrencySystem';
@@ -43,6 +43,8 @@ export class GameManager extends Component {
     private _loadingNode: Node | null = null;    // 加载界面节点
 
     async onLoad() {
+        // BootScene 只承载启动器；保持根节点常驻，确保切换到 MainScene 后初始化流程不会中断。
+        game.addPersistRootNode(this.node);
         this._loadStartTime = performance.now();
         console.log(`[GameManager] ⏱️  [${this._elapsed()}ms] onLoad 启动`);
 
@@ -53,34 +55,22 @@ export class GameManager extends Component {
         console.log(`[GameManager] ⏱️  [${this._elapsed()}ms] 开始并行加载 MainScene 和 数据资源...`);
 
         // 1a. 启动场景加载（异步不阻塞）
-        let sceneResolved = false;
-        const sceneReady = new Promise<void>((resolve) => {
-            director.once(director.EVENT_AFTER_SCENE_LAUNCH, () => {
-                sceneResolved = true;
-                console.log(`[GameManager] ⏱️  [${this._elapsed()}ms] MainScene 场景激活完成`);
-                resolve();
-            });
-        });
-
-        director.loadScene("MainScene", (completed, total) => {
-            // 每帧更新加载进度
-            if (total > 0) {
-                this._updateLoadProgress(0.3 + (completed / total) * 0.4);  // 场景加载占 30%-70%
-            }
-        });
+        const sceneReady = this._preloadAndLaunchMainScene();
 
         // 1b. 并行加载数据资源
         const initStart = performance.now();
         this._updateLoadProgress(0.05);  // 开始加载数据
-        await this.initialize();
-        const initCost = (performance.now() - initStart).toFixed(1);
-        console.log(`[GameManager] ⏱️  [${this._elapsed()}ms] 数据资源加载完成 (耗时 ${initCost}ms)`);
-
-        // 如果场景还没就绪，等待它
-        if (!sceneResolved) {
-            this._updateLoadProgress(0.75);
-            await sceneReady;
+        try {
+            // 场景和配置数据互不依赖，可以并行等待，缩短首屏时间。
+            await Promise.all([this.initialize(), sceneReady]);
+        } catch (error) {
+            // onLoad 是异步方法，必须在这里收口异常，否则会形成难定位的未处理 Promise。
+            console.error('[GameManager] 启动资源加载失败:', error);
+            this._showLoadFailure();
+            return;
         }
+        const initCost = (performance.now() - initStart).toFixed(1);
+        console.log(`[GameManager] ⏱️  [${this._elapsed()}ms] 场景与数据资源加载完成 (耗时 ${initCost}ms)`);
         this._updateLoadProgress(0.85);
 
         // ── 步骤2：分帧初始化各系统（允许渲染帧穿插，保持加载界面动画流畅）──
@@ -88,6 +78,37 @@ export class GameManager extends Component {
         this.scheduleOnce(() => {
             this._initSystemsBatch(0);
         }, 0);
+    }
+
+    /**
+     * Creator 3.8 的 loadScene 回调是场景启动回调，不是加载进度回调。
+     * 先 preloadScene 获取真实进度，再切换并等待场景激活。
+     */
+    private _preloadAndLaunchMainScene(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            director.preloadScene(
+                'MainScene',
+                (completedCount, totalCount) => {
+                    if (totalCount > 0) {
+                        this._updateLoadProgress(0.3 + (completedCount / totalCount) * 0.4);
+                    }
+                },
+                (error) => {
+                    if (error) {
+                        reject(error);
+                        return;
+                    }
+                    director.loadScene('MainScene', (loadError) => {
+                        if (loadError) {
+                            reject(loadError);
+                            return;
+                        }
+                        console.log(`[GameManager] ⏱️  [${this._elapsed()}ms] MainScene 场景激活完成`);
+                        resolve();
+                    });
+                },
+            );
+        });
     }
 
     /**
@@ -153,6 +174,14 @@ export class GameManager extends Component {
     private _initLateSystems() {
         const canvas = find('Canvas');
         if (!canvas) return;
+
+        // 商店、仓库和状态牌都位于 bandLayer。把交互层提升到场景装饰与作物层之上，
+        // 避免成熟作物较大的触摸区域拦截建筑点击。
+        const bandLayer = canvas.getChildByName('bandLayer');
+        if (bandLayer) {
+            bandLayer.setSiblingIndex(canvas.children.length - 1);
+        }
+
         this.ensureSystem<SaveManager>('SaveManager', canvas, SaveManager);
         this.ensureUIManager();
     }
@@ -196,7 +225,7 @@ export class GameManager extends Component {
     private _showLoadingScreen() {
         const canvas = find('Canvas') || this.node.scene.getChildByName('Canvas');
         if (!canvas) {
-            console.warn('[GameManager] 找不到Canvas节点，无法创建加载界面');
+            // BootScene 极简启动器没有 Canvas，短启动阶段沿用引擎启动画面。
             return;
         }
 
@@ -291,6 +320,8 @@ export class GameManager extends Component {
 
     /** 更新加载进度 (0.0 ~ 1.0) */
     private _updateLoadProgress(progress: number) {
+        // 外部进度来自不同加载阶段，先钳制范围，避免异常回调撑破进度条。
+        progress = Math.max(0, Math.min(1, progress));
         if (progress < this._loadingProgress) return;  // 只增不减
         this._loadingProgress = progress;
 
@@ -307,6 +338,15 @@ export class GameManager extends Component {
             if (textLabel) {
                 textLabel.string = `${Math.round(progress * 100)}%`;
             }
+        }
+    }
+
+    /** 启动失败时保留加载层并给出明确提示，避免用户只看到静止画面。 */
+    private _showLoadFailure(): void {
+        const textLabel = this._loadingText?.getComponent(Label);
+        if (textLabel) {
+            textLabel.string = '加载失败，请刷新后重试';
+            textLabel.color = new Color(224, 96, 76, 255);
         }
     }
 
@@ -431,7 +471,8 @@ export class GameManager extends Component {
      * 确保指定系统组件存在（通用方法）
      */
     private ensureSystem<T extends Component>(name: string, parent: Node, cls: new (...args: any[]) => T): T | null {
-        let node = find(`Canvas/${name}`);
+        // 系统都挂在当前 Canvas 下，直接从父节点查找比全场景路径搜索更稳定。
+        let node = parent.getChildByName(name);
         if (node) {
             const comp = node.getComponent(cls);
             if (comp) {

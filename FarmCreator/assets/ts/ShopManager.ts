@@ -1,7 +1,7 @@
 import { _decorator, Component, resources, JsonAsset, find, Node, Layers } from 'cc';
 import { CurrencySystem } from './CurrencySystem';
 import { eventBus, GameEvent } from './EventBus';
-const { ccclass, property } = _decorator;
+const { ccclass } = _decorator;
 
 /**
  * 商店商品数据
@@ -38,7 +38,7 @@ export interface BuyResult {
  */
 @ccclass('ShopManager')
 export class ShopManager extends Component {
-    private static _instance: ShopManager = null;
+    private static _instance: ShopManager | null = null;
     
     /** 商品列表 */
     private _items: Map<number, ShopItem> = new Map();
@@ -102,8 +102,8 @@ export class ShopManager extends Component {
             this.loadShopData();
             this._registerEvents();
         } else if (ShopManager._instance !== this) {
-            // 只有当实例不是当前组件时才销毁
-            this.destroy();
+            // 管理器使用专用节点，重复实例连同节点一起移除。
+            this.node.destroy();
         }
     }
     
@@ -141,7 +141,11 @@ export class ShopManager extends Component {
             }
             
             try {
-                const cropsData = asset.json;
+                const cropsData = asset.json as any[];
+                if (!Array.isArray(cropsData)) {
+                    throw new Error('作物配置必须是数组');
+                }
+                this._items.clear();
                 for (const crop of cropsData) {
                     // 计算成熟时间（所有阶段time之和）
                     let matureTime = 0;
@@ -251,8 +255,8 @@ export class ShopManager extends Component {
             return { success: false, message: `该作物需要等级 ${item.unlockLevel} 才能解锁` };
         }
         
-        if (quantity <= 0) {
-            return { success: false, message: '购买数量必须大于0' };
+        if (!Number.isInteger(quantity) || quantity <= 0) {
+            return { success: false, message: '购买数量必须是正整数' };
         }
         
         const totalPrice = item.seedPrice * quantity;
@@ -402,14 +406,19 @@ export class ShopManager extends Component {
     public restoreFromSave(data: any): void {
         if (!data) return;
         if (!this._initialized) {
+            // 商品配置异步加载完成前先暂存；此时不能提前写回本地缓存，
+            // 否则可能用一份尚未校验的存档覆盖当前有效数据。
             this._pendingSaveData = data;
+            return;
         }
 
         this._seedInventory.clear();
         if (Array.isArray(data.seedInventory)) {
             for (const [cropId, count] of data.seedInventory) {
-                if (count > 0) {
-                    this._seedInventory.set(Number(cropId), Number(count));
+                const parsedCropId = Number(cropId);
+                const parsedCount = Number(count);
+                if (Number.isInteger(parsedCropId) && Number.isInteger(parsedCount) && parsedCount > 0) {
+                    this._seedInventory.set(parsedCropId, parsedCount);
                 }
             }
         }
@@ -448,8 +457,10 @@ export class ShopManager extends Component {
                 const data = JSON.parse(dataStr);
                 if (Array.isArray(data)) {
                     for (const [cropId, count] of data) {
-                        if (count > 0) {
-                            this._seedInventory.set(Number(cropId), Number(count));
+                        const parsedCropId = Number(cropId);
+                        const parsedCount = Number(count);
+                        if (Number.isInteger(parsedCropId) && Number.isInteger(parsedCount) && parsedCount > 0) {
+                            this._seedInventory.set(parsedCropId, parsedCount);
                         }
                     }
                 }

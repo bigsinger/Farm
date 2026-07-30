@@ -1,5 +1,5 @@
-import { _decorator, Node, Button, Sprite, SpriteAtlas, JsonAsset, resources, SpriteFrame, UITransform, Vec2, Layers, error } from 'cc';
-import { Common, NaturalEnv, common } from './Common'
+import { _decorator, Node, Button, Sprite, SpriteAtlas, JsonAsset, UITransform, Layers } from 'cc';
+import { Common, NaturalEnv, common } from './Common';
 import { CurrencySystem } from './CurrencySystem';
 import { WarehouseManager } from './WarehouseManager';
 import { WeatherSystem } from './WeatherSystem';
@@ -52,7 +52,7 @@ export class CropLifecycle {
 
     // 从json数据反序列化CropLifecycle
     public static deserialize(json: any): CropLifecycle {
-        var lifecycle = new CropLifecycle();
+        const lifecycle = new CropLifecycle();
         lifecycle.Name = json.name;
         lifecycle.Days = json.time;
         lifecycle.Fuel = json.fuel;
@@ -82,6 +82,9 @@ export class CropData {
     // 售卖价格
     public SellPrice: number = 0;
 
+    // 成熟后允许收获的次数
+    public MatureTimes: number = 1;
+
     // 生命周期数组
     public Lifecycles: CropLifecycle[] = [];
 
@@ -89,8 +92,6 @@ export class CropData {
     public static AllCrops: CropData[] = [];
 
     constructor(CropId: number) {
-        console.log("CropData constructor");
-        //console.trace();
         if (CropId > 0) {
             this.CropId = CropId;
             this.initCropLifecycleFromId(CropId);
@@ -99,14 +100,15 @@ export class CropData {
 
     // 通过作物Id获取作物生长周期数据
     public initCropLifecycleFromId(CropId: number): void {
-        for (var i = 0; i < CropData.AllCrops.length; i++) {
-            if (CropData.AllCrops[i].CropId == CropId) {
-                var crop = CropData.AllCrops[i];
+        for (let i = 0; i < CropData.AllCrops.length; i++) {
+            if (CropData.AllCrops[i].CropId === CropId) {
+                const crop = CropData.AllCrops[i];
                 this.CropName = crop.CropName;
-        this.TempLow = crop.TempLow;
+                this.TempLow = crop.TempLow;
                 this.TempHigh = crop.TempHigh;
                 this.SeedPrice = crop.SeedPrice;
                 this.SellPrice = crop.SellPrice;
+                this.MatureTimes = crop.MatureTimes;
                 this.Lifecycles = crop.Lifecycles;
                 break;
             }
@@ -115,17 +117,22 @@ export class CropData {
 
     // 从json数据反序列化单个作物数据
     public static deserializeOne(json: any): CropData {
-        var cropData = new CropData(0);
+        if (!json || !Array.isArray(json.lifecycle)) {
+            throw new Error(`作物 ${json?.id ?? 'unknown'} 缺少 lifecycle 数组`);
+        }
+
+        const cropData = new CropData(0);
 
         cropData.CropName = json.name;
         cropData.CropId = json.id;
         cropData.SeedPrice = json.seedPrice || 10;
         cropData.SellPrice = json.sellPrice || 20;
+        cropData.MatureTimes = json.matureTimes ?? 1;
         cropData.TempLow = json.tempLow;
         cropData.TempHigh = json.tempHigh;
 
-        for (var i = 0; i < json.lifecycle.length; i++) {
-            var lifecycle = CropLifecycle.deserialize(json.lifecycle[i]);
+        for (let i = 0; i < json.lifecycle.length; i++) {
+            const lifecycle = CropLifecycle.deserialize(json.lifecycle[i]);
             cropData.Lifecycles.push(lifecycle);
         }
 
@@ -138,18 +145,17 @@ export class CropData {
         if (CropData.AllCrops.length > 0) {
             return;
         }
-        //console.log("load crop data...");
 
         const asset = await Common.loadResourceAsync<JsonAsset>(CropDataResourceName, JsonAsset);
-        if (asset != null) {
-            const jsonData: any = asset.json!;
-            for (var i = 0; i < jsonData.length; i++) {
-                CropData.AllCrops.push(CropData.deserializeOne(jsonData[i]));
-            }
-            console.log("load crop data ok");
-        } else {
-            console.log("load crop data error");
+        if (!asset || !Array.isArray(asset.json)) {
+            // 抛给 GameManager 统一显示“加载失败”，避免缺少配置时仍进入不可玩的主场景。
+            throw new Error(`无法加载作物配置: resources/${CropDataResourceName}.json`);
         }
+
+        // 先完整解析到临时数组，任何一项失败都不会留下“只加载了一半”的全局状态。
+        const crops = asset.json.map(item => CropData.deserializeOne(item));
+        CropData.AllCrops = crops;
+        console.log(`[CropData] 已加载 ${crops.length} 种作物配置`);
     }
 }
 
@@ -194,7 +200,7 @@ export class CropNode extends Node {
     constructor(cropAtlas: SpriteAtlas, CropId: number) {
         super();
 
-        var self = this;
+        const self = this;
         this.born();
 
         this.crop = new CropData(CropId);
@@ -392,7 +398,7 @@ export class CropNode extends Node {
 
             // 检查是否需要死亡（通过检查matureTimes）
             const cropData = CropData.AllCrops.find(c => c.CropId === this.crop.CropId);
-            const maxHarvestTimes = cropData ? (cropData as any).matureTimes || 1 : 1;
+            const maxHarvestTimes = cropData?.MatureTimes ?? 1;
 
             if (maxHarvestTimes > 0 && this.HarvestTimes >= maxHarvestTimes) {
                 this.Die();

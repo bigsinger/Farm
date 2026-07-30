@@ -7,7 +7,32 @@
 碎图及资源文件有一部分使用了[SDL农场游戏开发](https://github.com/sky94520/Farm/tree/Farm-09)里的资源，有一部分是从老版本的率土之滨里扒出来的资源，以上资源均用于学习研究使用，如果侵权请告知，会在第一时间删除。
 
 ## Cocos Creator版本
+
+**2026-07-30：**
+
+- `FarmCreator`升级到`Cocos Creator 3.8.8`，使用`BootScene`在 Creator 本地浏览器预览中完成测试，不生成 APK 或 Release 包；
+- 重新设计种子商店和丰收仓库，统一木质农场画风、信息层级、筛选状态和卡片布局；
+- 缩小并约束作物图片的显示安全区，修复图片遮挡库存、价格和种子数量的问题；
+- 修复作物触摸区拦截商店/仓库建筑、主界面信息牌不显示数值、异步关闭面板误销毁新面板等问题；
+- 优化启动时序、资源加载、存档校验、单例生命周期、事件监听和配置恢复逻辑，并补充关键中文注释；
+- 新增[《FarmCreator 实现教程》](./FarmCreator/TUTORIAL.md)，介绍项目结构、启动流程、作物生长、地图坐标、商店仓库、存档及特效实现。
+
+### Cocos Creator 3.8.8运行截图
+
+主界面：
+
+![Cocos Creator 3.8.8主界面](./screenshot/creator-3.8.8-main.webp)
+
+丰收仓库：
+
+![Cocos Creator 3.8.8仓库面板](./screenshot/creator-3.8.8-warehouse.webp)
+
+种子商店：
+
+![Cocos Creator 3.8.8商店面板](./screenshot/creator-3.8.8-shop.webp)
+
 **2025-08-19：**
+
 - 升级到3.8.7;
 - 将资源初始化操作放到GameManager中加载，解决编辑器中报错问题（不影响运行效果）;
 - 在Canvas根节点上挂载背景音乐解决初始界面无音效（需要交互后才有）的问题;

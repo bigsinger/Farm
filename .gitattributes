@@ -1,0 +1,2 @@
+# Markdown 文档统一使用 Unix 换行符，避免 Windows Git 配置引入 CRLF。
+*.md text eol=lf

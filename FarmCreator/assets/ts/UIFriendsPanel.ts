@@ -156,16 +156,16 @@ export class UIFriendsPanel extends Component {
      */
     private createFriendItemCode(friend: FriendInfo) {
         const node = new Node(`Friend_${friend.id}`);
-        node.setContentSize(550, 80);
+        node.addComponent(UITransform).setContentSize(550, 80);
         this.contentNode.addChild(node);
 
         // 在线状态指示
         const statusDot = new Node('StatusDot');
         const statusSprite = statusDot.addComponent(Sprite);
-        statusDot.setContentSize(12, 12);
         statusDot.setPosition(-250, 0);
         // 简单用颜色区分在线状态
         const statusBg = statusDot.addComponent(UITransform);
+        statusBg.setContentSize(12, 12);
         node.addChild(statusDot);
 
         // 名字
@@ -196,7 +196,7 @@ export class UIFriendsPanel extends Component {
 
         // 访问按钮
         const visitNode = new Node('VisitBtn');
-        visitNode.setContentSize(70, 35);
+        visitNode.addComponent(UITransform).setContentSize(70, 35);
         const visitBtn = visitNode.addComponent(Button);
         const visitLabel = new Node('Label');
         const vLabel = visitLabel.addComponent(Label);
@@ -209,7 +209,7 @@ export class UIFriendsPanel extends Component {
 
         // 送礼按钮
         const giftNode = new Node('GiftBtn');
-        giftNode.setContentSize(70, 35);
+        giftNode.addComponent(UITransform).setContentSize(70, 35);
         const giftBtn = giftNode.addComponent(Button);
         const giftLabel = new Node('Label');
         const gLabel = giftLabel.addComponent(Label);

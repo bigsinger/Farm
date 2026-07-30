@@ -1,4 +1,4 @@
-import { _decorator, Component, game, EventTarget } from 'cc';
+import { _decorator, Component, EventTarget } from 'cc';
 import { CurrencySystem } from './CurrencySystem';
 import { ExpSystem } from './ExpSystem';
 import { WarehouseManager } from './WarehouseManager';
@@ -9,9 +9,10 @@ import { TimeSystem } from './TimeSystem';
 import { WeatherSystem } from './WeatherSystem';
 import { FriendsSystem } from './FriendsSystem';
 import { TutorialManager } from './TutorialManager';
+import { MarketOrderManager } from './MarketOrderManager';
 import { eventBus, GameEvent } from './EventBus';
 import { Soil } from './soil';
-const { ccclass, property } = _decorator;
+const { ccclass } = _decorator;
 
 /**
  * 存档数据接口
@@ -35,7 +36,10 @@ export interface SaveData {
  */
 @ccclass('SaveManager')
 export class SaveManager extends Component {
-    private static _instance: SaveManager = null;
+    private static _instance: SaveManager | null = null;
+
+    /** 教程项目固定提供 3 个槽位，所有读写入口都通过同一规则校验。 */
+    private readonly _slotCount = 3;
     
     /** 当前存档编号 */
     private _currentSlot: number = 0;
@@ -54,6 +58,27 @@ export class SaveManager extends Component {
     
     /** 是否正在存档 */
     private _isSaving: boolean = false;
+
+    /** 事件触发的延迟存档状态，合并同一操作产生的多条事件 */
+    private _saveScheduled: boolean = false;
+
+    /**
+     * 会改变持久数据的事件列表。
+     * 注册与注销共用同一份配置，避免增加事件时只改到其中一处而造成监听泄漏。
+     */
+    private readonly _dirtyEvents: GameEvent[] = [
+        GameEvent.CROP_HARVESTED,
+        GameEvent.GOLD_CHANGED,
+        GameEvent.LEVEL_UP,
+        GameEvent.ACHIEVEMENT_UNLOCKED,
+        GameEvent.SHOP_ITEM_BOUGHT,
+        GameEvent.WAREHOUSE_CHANGED,
+        GameEvent.MARKET_ORDER_COMPLETED,
+    ];
+
+    /** 内存中累计游戏时长，避免每帧写 localStorage */
+    private _playTimeSeconds: number = 0;
+    private _playTimeFlushElapsed: number = 0;
     
     public static getInstance(): SaveManager {
         if (!this._instance) {
@@ -65,12 +90,13 @@ export class SaveManager extends Component {
     onLoad() {
         if (SaveManager._instance === null) {
             SaveManager._instance = this;
-            game.addPersistRootNode(this.node);
+            this._playTimeSeconds = Number(localStorage.getItem('farm_total_playtime')) || 0;
             this._startAutoSave();
             this._registerEventListeners();
             console.log('[SaveManager] 初始化完成，已注册事件监听');
         } else {
-            this.destroy();
+            // SaveManager 节点是专用节点；出现重复实例时连同空壳节点一起清理。
+            this.node.destroy();
         }
     }
 
@@ -78,6 +104,8 @@ export class SaveManager extends Component {
         if (SaveManager._instance === this) {
             this._unregisterEventListeners();
             this._stopAutoSave();
+            this.unschedule(this._flushDirtySave);
+            localStorage.setItem('farm_total_playtime', this._playTimeSeconds.toString());
             SaveManager._instance = null;
         }
     }
@@ -88,27 +116,32 @@ export class SaveManager extends Component {
      * 注册事件监听 - 监听关键游戏事件标记脏数据
      */
     private _registerEventListeners(): void {
-        eventBus.on(GameEvent.CROP_HARVESTED, this._onDataChanged, this);
-        eventBus.on(GameEvent.GOLD_CHANGED, this._onDataChanged, this);
-        eventBus.on(GameEvent.LEVEL_UP, this._onDataChanged, this);
-        eventBus.on(GameEvent.ACHIEVEMENT_UNLOCKED, this._onDataChanged, this);
+        for (const event of this._dirtyEvents) {
+            eventBus.on(event, this._onDataChanged, this);
+        }
     }
 
     /**
      * 取消事件监听
      */
     private _unregisterEventListeners(): void {
-        eventBus.off(GameEvent.CROP_HARVESTED, this._onDataChanged, this);
-        eventBus.off(GameEvent.GOLD_CHANGED, this._onDataChanged, this);
-        eventBus.off(GameEvent.LEVEL_UP, this._onDataChanged, this);
-        eventBus.off(GameEvent.ACHIEVEMENT_UNLOCKED, this._onDataChanged, this);
+        for (const event of this._dirtyEvents) {
+            eventBus.off(event, this._onDataChanged, this);
+        }
     }
 
     /** 数据变更回调 - 标记需要存档 */
-    private _onDataChanged(data: any): void {
-        // 关键数据变更时自动存档（节流：距上次存档超过10秒才触发）
+    private _onDataChanged(): void {
+        if (this._saveScheduled) return;
+        this._saveScheduled = true;
+        this.scheduleOnce(this._flushDirtySave, 2);
+    }
+
+    /** 将短时间内的连续数据事件合并为一次写盘 */
+    private _flushDirtySave(): void {
+        this._saveScheduled = false;
         if (!this._isSaving) {
-            this.save();
+            void this.save();
         }
     }
     
@@ -120,20 +153,10 @@ export class SaveManager extends Component {
     /**
      * 获取存档列表信息
      */
-    public getSaveList(): SaveData[] {
-        const list: SaveData[] = [];
-        for (let i = 0; i < 3; i++) {
-            const metaKey = `farm_save_meta_${i}`;
-            const metaStr = localStorage.getItem(metaKey);
-            if (metaStr) {
-                try {
-                    list.push(JSON.parse(metaStr));
-                } catch (e) {
-                    list.push(null);
-                }
-            } else {
-                list.push(null);
-            }
+    public getSaveList(): Array<SaveData | null> {
+        const list: Array<SaveData | null> = [];
+        for (let i = 0; i < this._slotCount; i++) {
+            list.push(this.getSaveMeta(i));
         }
         return list;
     }
@@ -142,16 +165,7 @@ export class SaveManager extends Component {
      * 获取单个存档槽位信息
      */
     public getSlotInfo(slot: number): SaveData | null {
-        const metaKey = `farm_save_meta_${slot}`;
-        const metaStr = localStorage.getItem(metaKey);
-        if (metaStr) {
-            try {
-                return JSON.parse(metaStr);
-            } catch (e) {
-                return null;
-            }
-        }
-        return null;
+        return this.getSaveMeta(slot);
     }
 
     // ==================== 存档操作 ====================
@@ -161,6 +175,7 @@ export class SaveManager extends Component {
      * @param slot 存档槽位（0-2）
      */
     public async save(slot: number = this._currentSlot): Promise<boolean> {
+        if (!this._isValidSlot(slot)) return false;
         if (this._isSaving) {
             console.warn('[SaveManager] 正在存档中，请稍后');
             return false;
@@ -204,6 +219,7 @@ export class SaveManager extends Component {
      * @param slot 存档槽位（0-2）
      */
     public async load(slot: number = this._currentSlot): Promise<boolean> {
+        if (!this._isValidSlot(slot)) return false;
         try {
             const key = `farm_save_${slot}`;
             const dataStr = localStorage.getItem(key);
@@ -242,6 +258,7 @@ export class SaveManager extends Component {
      * 检查存档是否存在
      */
     public hasSave(slot: number): boolean {
+        if (!this._isValidSlot(slot, false)) return false;
         return localStorage.getItem(`farm_save_${slot}`) !== null;
     }
     
@@ -249,6 +266,7 @@ export class SaveManager extends Component {
      * 获取存档元数据
      */
     public getSaveMeta(slot: number): SaveData | null {
+        if (!this._isValidSlot(slot, false)) return null;
         const metaStr = localStorage.getItem(`farm_save_${slot}_meta`);
         if (metaStr) {
             try {
@@ -264,6 +282,7 @@ export class SaveManager extends Component {
      * 删除存档
      */
     public deleteSave(slot: number): boolean {
+        if (!this._isValidSlot(slot)) return false;
         if (!this.hasSave(slot)) {
             console.warn(`[SaveManager] 槽位 ${slot} 没有存档`);
             return false;
@@ -280,7 +299,7 @@ export class SaveManager extends Component {
      */
     public getAllSaveSlots(): { slot: number; hasData: boolean; meta: SaveData | null }[] {
         const slots = [];
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < this._slotCount; i++) {
             slots.push({
                 slot: i,
                 hasData: this.hasSave(i),
@@ -301,6 +320,7 @@ export class SaveManager extends Component {
      * 导出存档为字符串
      */
     public exportSave(slot: number = this._currentSlot): string | null {
+        if (!this._isValidSlot(slot)) return null;
         const key = `farm_save_${slot}`;
         const dataStr = localStorage.getItem(key);
         if (!dataStr) return null;
@@ -318,6 +338,7 @@ export class SaveManager extends Component {
      * 导入存档
      */
     public importSave(slot: number, exportStr: string): boolean {
+        if (!this._isValidSlot(slot)) return false;
         try {
             const dataStr = decodeURIComponent(atob(exportStr));
             const data = JSON.parse(dataStr);
@@ -349,6 +370,10 @@ export class SaveManager extends Component {
      * 设置自动存档间隔
      */
     public setAutoSaveInterval(intervalMs: number): void {
+        if (!Number.isFinite(intervalMs) || intervalMs < 5000) {
+            console.warn('[SaveManager] 自动存档间隔不能小于 5 秒');
+            return;
+        }
         this._autoSaveInterval = intervalMs;
         this._stopAutoSave();
         this._startAutoSave();
@@ -416,6 +441,11 @@ export class SaveManager extends Component {
         if (shopManager) {
             data.shop = shopManager.getSaveData();
         }
+
+        const marketOrderManager = MarketOrderManager.getInstance();
+        if (marketOrderManager) {
+            data.marketOrders = marketOrderManager.getSaveData();
+        }
         
         // 收集任务系统数据
         const taskManager = TaskManager.getInstance();
@@ -469,7 +499,12 @@ export class SaveManager extends Component {
         // 收集设置
         const settings = localStorage.getItem('farm_settings');
         if (settings) {
-            data.settings = JSON.parse(settings);
+            // 设置不是核心存档数据；即使它被手工改坏，也不应导致整个存档失败。
+            try {
+                data.settings = JSON.parse(settings);
+            } catch (error) {
+                console.warn('[SaveManager] 设置数据格式无效，本次存档将忽略设置:', error);
+            }
         }
         
         return data;
@@ -507,6 +542,13 @@ export class SaveManager extends Component {
             const shopManager = ShopManager.getInstance();
             if (shopManager) {
                 shopManager.restoreFromSave(data.shop);
+            }
+        }
+
+        if (data.marketOrders) {
+            const marketOrderManager = MarketOrderManager.getInstance();
+            if (marketOrderManager) {
+                marketOrderManager.restoreFromSave(data.marketOrders);
             }
         }
         
@@ -590,12 +632,24 @@ export class SaveManager extends Component {
         console.log('[SaveManager] 存档数据已迁移到最新版本');
         return true;
     }
+
+    /**
+     * 校验槽位，防止外部参数意外写入 farm_save_-1 等无效键。
+     * 查询类调用可以关闭日志，避免 UI 枚举槽位时产生无意义告警。
+     */
+    private _isValidSlot(slot: number, logWarning = true): boolean {
+        const valid = Number.isInteger(slot) && slot >= 0 && slot < this._slotCount;
+        if (!valid && logWarning) {
+            console.warn(`[SaveManager] 无效存档槽位: ${slot}`);
+        }
+        return valid;
+    }
     
     /**
      * 获取总游戏时长（秒）
      */
     private _getTotalPlayTime(): number {
-        return parseInt(localStorage.getItem('farm_total_playtime') || '0');
+        return Math.floor(this._playTimeSeconds);
     }
     
     /**
@@ -609,9 +663,12 @@ export class SaveManager extends Component {
      * 更新游戏时长
      */
     private _updatePlayTime(deltaTime: number): void {
-        const key = 'farm_total_playtime';
-        const current = parseInt(localStorage.getItem(key) || '0');
-        localStorage.setItem(key, (current + deltaTime).toString());
+        this._playTimeSeconds += deltaTime;
+        this._playTimeFlushElapsed += deltaTime;
+        if (this._playTimeFlushElapsed >= 5) {
+            this._playTimeFlushElapsed = 0;
+            localStorage.setItem('farm_total_playtime', this._playTimeSeconds.toString());
+        }
     }
     
     /**
