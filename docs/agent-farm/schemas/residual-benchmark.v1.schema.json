@@ -1,0 +1,273 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-farm.local/schemas/residual-benchmark.v1.schema.json",
+  "title": "Agent Farm residual benchmark artifact v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact_id",
+    "generated_at",
+    "sha256",
+    "ledger",
+    "scope",
+    "summary",
+    "residuals",
+    "cleanup_proof",
+    "provider_proof"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "agent-farm.residual-benchmark.v1"
+    },
+    "artifact_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generated_at": {
+      "$ref": "#/$defs/dateTime"
+    },
+    "sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "ledger": {
+      "type": "object",
+      "required": ["first_seq", "last_seq", "event_count"],
+      "properties": {
+        "first_seq": {
+          "$ref": "#/$defs/nonNegativeSafeInteger"
+        },
+        "last_seq": {
+          "$ref": "#/$defs/nonNegativeSafeInteger"
+        },
+        "event_count": {
+          "$ref": "#/$defs/nonNegativeSafeInteger"
+        }
+      },
+      "additionalProperties": false
+    },
+    "scope": {
+      "type": "object",
+      "required": ["repository_ids", "task_ids"],
+      "properties": {
+        "repository_ids": {
+          "$ref": "#/$defs/stringArray"
+        },
+        "task_ids": {
+          "$ref": "#/$defs/stringArray"
+        }
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": ["total", "by_type", "by_severity"],
+      "properties": {
+        "total": {
+          "$ref": "#/$defs/nonNegativeSafeInteger"
+        },
+        "by_type": {
+          "$ref": "#/$defs/countMap"
+        },
+        "by_severity": {
+          "$ref": "#/$defs/countMap"
+        }
+      },
+      "additionalProperties": false
+    },
+    "residuals": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/residualFinding"
+      }
+    },
+    "cleanup_proof": {
+      "type": "object",
+      "required": ["checked_paths", "remaining_paths"],
+      "properties": {
+        "checked_paths": {
+          "$ref": "#/$defs/stringArray"
+        },
+        "remaining_paths": {
+          "$ref": "#/$defs/stringArray"
+        }
+      },
+      "additionalProperties": false
+    },
+    "provider_proof": {
+      "$ref": "#/$defs/providerProof"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "dateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "nonNegativeSafeInteger": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "stringArray": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "nonEmptyStringArray": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "countMap": {
+      "type": "object",
+      "propertyNames": {
+        "minLength": 1
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/nonNegativeSafeInteger"
+      }
+    },
+    "residualFinding": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "severity",
+        "detected_at",
+        "source_event_seq",
+        "provenance",
+        "evidence",
+        "remediation"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "enum": [
+            "orphan_worktree",
+            "orphan_run",
+            "dangling_task",
+            "double_terminal",
+            "review_merge_mismatch",
+            "stale_run",
+            "cost_event_mismatch"
+          ]
+        },
+        "severity": {
+          "enum": ["info", "warning", "blocking"]
+        },
+        "task_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "repository_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "detected_at": {
+          "$ref": "#/$defs/dateTime"
+        },
+        "source_event_seq": {
+          "$ref": "#/$defs/nonNegativeSafeInteger"
+        },
+        "provenance": {
+          "type": "object",
+          "required": ["kind", "source", "observed_at", "digest"],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source": {
+              "type": "string",
+              "minLength": 1
+            },
+            "observed_at": {
+              "$ref": "#/$defs/dateTime"
+            },
+            "digest": {
+              "$ref": "#/$defs/sha256"
+            }
+          },
+          "additionalProperties": false
+        },
+        "evidence": {
+          "type": "object"
+        },
+        "remediation": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "providerProof": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["status", "run_ids"],
+          "properties": {
+            "status": {
+              "const": "verified"
+            },
+            "run_ids": {
+              "$ref": "#/$defs/nonEmptyStringArray"
+            },
+            "cost_usd": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["status", "reason", "run_ids"],
+          "properties": {
+            "status": {
+              "const": "blocked"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "run_ids": {
+              "$ref": "#/$defs/nonEmptyStringArray"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["status", "reason", "run_ids"],
+          "properties": {
+            "status": {
+              "const": "not_run"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "run_ids": {
+              "$ref": "#/$defs/stringArray"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}

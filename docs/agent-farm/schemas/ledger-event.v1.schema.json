@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-farm.local/schemas/ledger-event.v1.schema.json",
+  "title": "Agent Farm REST ledger event v1",
+  "description": "One AuditEventView returned in GET /api/events. WebSocket events intentionally use a smaller wire shape documented separately.",
+  "type": "object",
+  "required": [
+    "seq",
+    "id",
+    "type",
+    "entity_type",
+    "entity_id",
+    "repository_id",
+    "task_id",
+    "run_id",
+    "actor",
+    "occurred_at",
+    "payload",
+    "provenance"
+  ],
+  "properties": {
+    "seq": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entity_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entity_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_id": {
+      "type": ["string", "null"]
+    },
+    "task_id": {
+      "type": ["string", "null"]
+    },
+    "run_id": {
+      "type": ["string", "null"]
+    },
+    "actor": {
+      "type": "string",
+      "minLength": 1
+    },
+    "occurred_at": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991
+    },
+    "payload": true,
+    "provenance": {
+      "type": "object",
+      "required": ["kind", "source", "digest", "seq"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "digest": {
+          "type": ["string", "null"]
+        },
+        "seq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

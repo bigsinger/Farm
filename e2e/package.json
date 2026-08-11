@@ -1,0 +1,28 @@
+{
+  "name": "agent-farm-e2e",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "pnpm run test:all",
+    "typecheck": "../web-app/node_modules/.bin/tsc -p tsconfig.json --noEmit",
+    "preflight": "../server/node_modules/.bin/tsx scripts/preflight.ts",
+    "_test:infrastructure": "../server/node_modules/.bin/tsx scripts/run-node-tests.ts infrastructure",
+    "_test:integration": "../server/node_modules/.bin/tsx scripts/run-node-tests.ts integration",
+    "_test:browser": "NO_PROXY=localhost,127.0.0.1,::1 playwright test --grep-invert @provider",
+    "_test:provider": "../server/node_modules/.bin/tsx scripts/provider-gate.ts && NO_PROXY=localhost,127.0.0.1,::1 playwright test --grep @provider --workers=1",
+    "test:infrastructure": "../server/node_modules/.bin/tsx scripts/run-suite.ts infrastructure",
+    "test:integration": "../server/node_modules/.bin/tsx scripts/run-suite.ts integration",
+    "test:browser": "../server/node_modules/.bin/tsx scripts/run-suite.ts browser",
+    "test:local": "../server/node_modules/.bin/tsx scripts/run-suite.ts local",
+    "test:provider": "../server/node_modules/.bin/tsx scripts/run-suite.ts provider",
+    "test:all": "../server/node_modules/.bin/tsx scripts/run-suite.ts all",
+    "test:headed": "NO_PROXY=localhost,127.0.0.1,::1 playwright test --grep-invert @provider --headed",
+    "report": "../server/node_modules/.bin/tsx scripts/write-benchmark.ts && ../server/node_modules/.bin/tsx scripts/report.ts",
+    "report:html": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.0",
+    "@types/node": "^22.0.0"
+  }
+}
