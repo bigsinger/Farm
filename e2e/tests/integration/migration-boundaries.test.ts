@@ -299,9 +299,12 @@ test("checksum failure rolls back migration 002 without partial schema or backfi
     await Promise.all([
       copyFile(join(SERVER_ROOT, "src", "db.ts"), join(copiedServer, "src", "db.ts")),
       copyFile(join(SERVER_ROOT, "src", "load-env.ts"), join(copiedServer, "src", "load-env.ts")),
+      copyFile(join(SERVER_ROOT, "src", "config.ts"), join(copiedServer, "src", "config.ts")),
+      copyFile(join(SERVER_ROOT, "src", "errors.ts"), join(copiedServer, "src", "errors.ts")),
       ...MIGRATION_FILES.map((filename) => copyFile(join(MIGRATIONS_ROOT, filename), join(copiedServer, "migrations", filename))),
     ]);
     await access(join(copiedServer, "src", "db.ts"));
+    await access(join(copiedServer, "src", "config.ts"));
     const database = join(dataDir, "db.sqlite");
     run("sqlite3", [database], {
       input: `

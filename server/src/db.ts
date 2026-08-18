@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import Database from "better-sqlite3";
-import "./load-env.js";
+import "./config.js";
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 const migrationsDir = path.resolve(moduleDir, "../migrations");
@@ -16,6 +16,7 @@ export const WORKTREES_DIR = path.join(DATA_DIR_PATH, "worktrees");
 export const ARTIFACTS_DIR = path.join(DATA_DIR_PATH, "artifacts");
 export const LOGS_DIR = path.join(DATA_DIR_PATH, "logs");
 export const BENCHMARKS_DIR = path.join(DATA_DIR_PATH, "benchmarks");
+export const RUNS_DIR = path.join(DATA_DIR_PATH, "runs");
 export const DB_PATH = path.join(DATA_DIR_PATH, "db.sqlite");
 
 interface MigrationFile {
@@ -109,7 +110,7 @@ const migrations = localMigrations();
 const existingDatabasePath = fs.existsSync(DB_PATH) && fs.statSync(DB_PATH).size > 0 ? DB_PATH : null;
 assertDatabaseCompatible(existingDatabasePath, migrations);
 
-for (const directory of [DATA_DIR_PATH, WORKTREES_DIR, ARTIFACTS_DIR, LOGS_DIR, BENCHMARKS_DIR]) {
+for (const directory of [DATA_DIR_PATH, WORKTREES_DIR, ARTIFACTS_DIR, LOGS_DIR, BENCHMARKS_DIR, RUNS_DIR]) {
   fs.mkdirSync(directory, { recursive: true, mode: 0o700 });
 }
 

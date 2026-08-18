@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
+import { createHash } from "node:crypto";
 import { createRequire } from "node:module";
-import { mkdtemp, mkdir, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readdir, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
@@ -9,6 +11,72 @@ import { errorMiddleware } from "../../../server/src/errors.js";
 import { sanitizeForAudit } from "../../../server/src/ledger.js";
 import { createHarness, SERVER_ROOT } from "../../lib/harness.js";
 import { LedgerCollector } from "../../lib/ws-ledger.js";
+
+const TSX = join(SERVER_ROOT, "node_modules", ".bin", "tsx");
+
+async function spawnServerOnce(
+  harness: Awaited<ReturnType<typeof createHarness>>,
+  extraEnv: NodeJS.ProcessEnv,
+): Promise<{ exitCode: number | null; stdout: string; stderr: string }> {
+  return await new Promise((resolve, reject) => {
+    const child = spawn(TSX, ["src/index.ts"], {
+      cwd: SERVER_ROOT,
+      env: {
+        ...process.env,
+        AGENT_FARM_DATA_DIR: harness.dataDir,
+        AGENT_FARM_DISABLE_USER_SETTINGS: "1",
+        HOME: harness.homeDir,
+        USERPROFILE: harness.homeDir,
+        HOST: "127.0.0.1",
+        PORT: String(harness.port),
+        ...extraEnv,
+      },
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    const stdout: Buffer[] = [];
+    const stderr: Buffer[] = [];
+    child.stdout?.on("data", (chunk: Buffer) => stdout.push(Buffer.from(chunk)));
+    child.stderr?.on("data", (chunk: Buffer) => stderr.push(Buffer.from(chunk)));
+    const timer = setTimeout(() => {
+      child.kill("SIGKILL");
+      reject(new Error("server did not exit after forbidden HOST bind"));
+    }, 15_000);
+    timer.unref();
+    child.once("error", (error) => {
+      clearTimeout(timer);
+      reject(error);
+    });
+    child.once("close", (exitCode) => {
+      clearTimeout(timer);
+      resolve({
+        exitCode,
+        stdout: Buffer.concat(stdout).toString("utf8"),
+        stderr: Buffer.concat(stderr).toString("utf8"),
+      });
+    });
+  });
+}
+
+async function snapshotDataDir(dataDir: string): Promise<Map<string, { size: number; sha256: string }>> {
+  const result = new Map<string, { size: number; sha256: string }>();
+  let entries: Array<{ name: string; isFile(): boolean; isDirectory(): boolean; parentPath?: string; path?: string }>;
+  try {
+    entries = await readdir(dataDir, { recursive: true, withFileTypes: true }) as typeof entries;
+  } catch {
+    return result;
+  }
+  for (const entry of entries) {
+    if (!entry.isFile()) continue;
+    const file = join((entry as { parentPath?: string }).parentPath ?? dataDir, entry.name);
+    const relative = file.slice(dataDir.length + 1);
+    const bytes = await readFile(file);
+    result.set(relative, {
+      size: bytes.byteLength,
+      sha256: createHash("sha256").update(bytes).digest("hex"),
+    });
+  }
+  return result;
+}
 
 interface WsClient {
   once(event: "open", listener: () => void): this;
@@ -19,7 +87,10 @@ interface WsClient {
 }
 
 interface WsConstructor {
-  new (url: string, options?: { origin?: string }): WsClient;
+  new (
+    url: string,
+    options?: { origin?: string; headers?: Record<string, string> },
+  ): WsClient;
 }
 
 const serverRequire = createRequire(join(SERVER_ROOT, "package.json"));
@@ -37,19 +108,27 @@ async function connectWithOrigin(url: string, origin: string): Promise<WsClient>
   });
 }
 
-async function rejectedOriginStatus(url: string, origin: string): Promise<number> {
+async function rejectedUpgradeStatus(
+  url: string,
+  options: { origin?: string; headers?: Record<string, string> } = {},
+): Promise<number> {
   return await new Promise<number>((resolve, reject) => {
-    const socket = new WebSocket(url, { origin });
+    const socket = new WebSocket(url, options);
     socket.once("open", () => {
       socket.terminate();
-      reject(new Error("cross-origin WebSocket unexpectedly opened"));
+      reject(new Error("forbidden WebSocket upgrade unexpectedly opened"));
     });
     socket.once("unexpected-response", (_request, response) => {
       socket.terminate();
       resolve(response.statusCode ?? 0);
     });
     socket.once("error", (error) => {
-      if (!/Unexpected server response: 403/i.test(error.message)) reject(error);
+      const match = /Unexpected server response: (\d+)/i.exec(error.message);
+      if (match) {
+        resolve(Number(match[1]));
+        return;
+      }
+      reject(error);
     });
   });
 }
@@ -90,7 +169,7 @@ test("real server allows same-origin ledger clients and rejects cross-origin bro
 
     const sameOrigin = await connectWithOrigin(server.wsUrl, server.baseUrl);
     sameOrigin.close();
-    assert.equal(await rejectedOriginStatus(server.wsUrl, "https://attacker.example"), 403);
+    assert.equal(await rejectedUpgradeStatus(server.wsUrl, { origin: "https://attacker.example" }), 403);
   } finally {
     const proof = await harness.cleanup();
     assert.equal(proof.processStopped, true);
@@ -130,21 +209,91 @@ test("malformed and oversized JSON bodies return structured client errors", { ti
   }
 });
 
-test("local project art is served only on loopback bindings", { timeout: 2 * 60_000 }, async () => {
+test("local project art is served on loopback while non-loopback HOST fails before any data write", { timeout: 2 * 60_000 }, async () => {
   const harness = await createHarness("asset-license-boundary");
   try {
-    let server = await harness.startServer();
+    const server = await harness.startServer();
     const local = await fetch(`${server.baseUrl}/assets/BootScene.scene`);
     assert.equal(local.status, 200);
     assert.match(local.headers.get("content-type") ?? "", /json|octet-stream/);
 
+    const foreignOrigin = await fetch(`${server.baseUrl}/api/health`, {
+      headers: { Origin: "https://attacker.example" },
+    });
+    assert.equal(foreignOrigin.status, 403);
+    const foreignBody = await foreignOrigin.json() as { error?: { code?: string } };
+    assert.equal(foreignBody.error?.code, "invalid_browser_origin");
+
+    const nullOrigin = await fetch(`${server.baseUrl}/api/health`, {
+      headers: { Origin: "null" },
+    });
+    assert.equal(nullOrigin.status, 403);
+
+    const crossSite = await fetch(`${server.baseUrl}/api/health`, {
+      headers: { "Sec-Fetch-Site": "cross-site" },
+    });
+    assert.equal(crossSite.status, 403);
+    const crossSiteBody = await crossSite.json() as { error?: { code?: string } };
+    assert.equal(crossSiteBody.error?.code, "cross_site_request_denied");
+
+    assert.equal(await rejectedUpgradeStatus(server.wsUrl, { origin: "http://attacker.example" }), 403);
+    assert.equal(
+      await rejectedUpgradeStatus(server.wsUrl, {
+        origin: `http://attacker.example:${server.port}`,
+        headers: { Host: `attacker.example:${server.port}` },
+      }),
+      400,
+    );
+
     await harness.stopServer();
-    server = await harness.restartServer({ HOST: "0.0.0.0" });
-    const nonLoopback = await fetch(`${server.baseUrl}/assets/BootScene.scene`);
-    assert.equal(nonLoopback.status, 404);
-    const body = await nonLoopback.json() as { error?: { code?: string } };
-    assert.equal(body.error?.code, "route_not_found");
-    assert.match(server.stdout(), /not served on non-loopback bindings/);
+    const dataBefore = await snapshotDataDir(harness.dataDir);
+    const failedStart = await spawnServerOnce(harness, { HOST: "0.0.0.0" });
+    assert.notEqual(failedStart.exitCode, 0);
+    assert.match(`${failedStart.stdout}\n${failedStart.stderr}`, /refusing non-loopback bind|HOST must be one of/i);
+    assert.deepEqual(await snapshotDataDir(harness.dataDir), dataBefore);
+  } finally {
+    const proof = await harness.cleanup();
+    assert.equal(proof.processStopped, true);
+    assert.equal(proof.dataDirectoryRemoved, true);
+  }
+});
+
+test("review actor is fixed to local_user and ignores caller-controlled headers", { timeout: 2 * 60_000 }, async () => {
+  const harness = await createHarness("review-actor-boundary");
+  try {
+    const git = await harness.createGitFixture({ "README.md": "# review actor\n" });
+    const server = await harness.startServer();
+    const created = await fetch(`${server.baseUrl}/api/tasks`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        prompt: "noop review actor boundary",
+        repo_path: git.repository,
+        auto_start: false,
+      }),
+    });
+    assert.equal(created.status, 201);
+    const createdBody = await created.json() as { task?: { id?: string }; id?: string };
+    const taskId = createdBody.task?.id ?? createdBody.id;
+    assert.ok(typeof taskId === "string" && taskId.length > 0);
+
+    const review = await fetch(`${server.baseUrl}/api/tasks/${taskId}/reviews`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-agent-farm-actor": "attacker",
+      },
+      body: JSON.stringify({
+        decision: "approved",
+        diff_digest: "0".repeat(64),
+        summary: "forged actor must not stick",
+      }),
+    });
+    const reviewText = await review.text();
+    assert.doesNotMatch(reviewText, /"actor"\s*:\s*"attacker"/);
+    if (review.ok) {
+      assert.match(reviewText, /"actor"\s*:\s*"local_user"/);
+    }
   } finally {
     const proof = await harness.cleanup();
     assert.equal(proof.processStopped, true);

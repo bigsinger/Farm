@@ -393,7 +393,7 @@ export async function reviewHandler(req: Request, res: Response): Promise<void> 
     rawDecision,
     input.diff_digest,
     input.summary,
-    optionalString(req.header("x-agent-farm-actor"), "x-agent-farm-actor", 200) ?? "human",
+    "local_user",
   );
   res.status(201).json(await hydrateDetail(id));
 }

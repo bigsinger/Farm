@@ -4,14 +4,14 @@
 
 最低要求：
 
-- Node.js 20 或更高版本；当前 `better-sqlite3` 12.11.1 的 package engine 声明支持 Node 20、22、23、24、25、26；
+- Node.js `>=20.11.0`；当前 `better-sqlite3` 12.11.1 的 package engine 声明支持 Node 20、22、23、24、25、26；
 - pnpm；
 - Git；
 - 可写的 `AGENT_FARM_DATA_DIR`；
 - 已构建的 `web-app/dist`；
 - 如果需要真实 Agent run：有效的 Anthropic、Bedrock、Vertex、Foundry 或兼容 endpoint 凭据。
 
-服务默认只监听 `127.0.0.1`。如果修改 `HOST` 暴露到其他网络，应在反向代理层增加认证、TLS、请求大小限制和访问日志；本实现不把本地开发 API 宣称为互联网多租户控制面。
+当前版本只接受 loopback bind：`127.0.0.1`、`localhost`、`::1`。非 loopback / wildcard HOST 会在创建 data directory、SQLite、WAL、migration 或 ledger metadata 前 fail closed。不要把 Agent Farm 挂到 LAN/public reverse proxy；未来远程访问必须单独设计 TLS、认证、授权、CSRF 与 tenant/provider isolation。本实现也不把固定 `local_user` review actor 宣称为远程 principal。
 
 健康检查：
 
@@ -26,8 +26,9 @@ curl --fail http://127.0.0.1:7878/api/health
 | 变量 | 默认 | 说明 |
 |---|---:|---|
 | `AGENT_FARM_DATA_DIR` | `~/.agent-farm` | SQLite、worktrees、artifacts、logs、benchmarks 的根目录；必须使用绝对隔离目录运行并行实例 |
-| `HOST` | `127.0.0.1` | HTTP/WS bind address |
+| `HOST` | `127.0.0.1` | HTTP/WS bind address；只接受 `127.0.0.1` / `localhost` / `::1` |
 | `PORT` | `7878` | 监听端口 |
+| `AGENT_FARM_BROWSER_ORIGINS` | 派生自 HOST/PORT 的三个 loopback origin | 本机 Vite/loopback TLS proxy 的精确 Origin allowlist；每项必须是绝对 http(s) loopback origin、显式端口、无 path/query/hash |
 | `AGENT_FARM_RUN_TIMEOUT_MS` | 30 分钟 | Agent run 默认超时 |
 | `AGENT_FARM_MAX_BUDGET_USD` | `5` | 单 run 默认 provider 预算 |
 | `AGENT_FARM_STALE_RUN_MS` | 5 分钟 | residual stale-run 阈值 |
@@ -35,7 +36,7 @@ curl --fail http://127.0.0.1:7878/api/health
 | `AGENT_FARM_DIFF_RESPONSE_MAX_BYTES` | 4 MiB | `/api/tasks/:id/diff` 的 patch 响应截断阈值；不删除完整 artifact |
 | `AGENT_FARM_DISABLE_USER_SETTINGS` | unset | 设为 `1` 时不读取 `~/.claude/settings.json`，用于隔离测试/服务账户 |
 
-Provider 环境变量见 `server/.env.example`。Shell env 优先于 `server/.env`；project env 再优先于 `~/.claude/settings.json` 中尚未设置的 env。用户 settings 的 env 只在 server 启动时补值；SDK query 使用 `settingSources: []`，不会加载 settings behavior。不要把 secret 写入 Git、audit payload、benchmark 或测试 artifact。
+Provider 环境变量见 `server/.env.example`。Shell env 优先于 `server/.env`；project env 再优先于 `~/.claude/settings.json` 中尚未设置的 env。用户 settings 只会补 provider/transport 相关键（`ANTHROPIC_*`、`CLAUDE_CODE_USE_*`、AWS/Google/Azure 与明确 proxy/证书变量），不会把任意 GitHub/云无关 secret 复制进 server 环境。SDK query 使用 `settingSources: []`，不会加载 settings behavior。不要把 secret 写入 Git、audit payload、benchmark 或测试 artifact。
 
 ## 3. 数据布局
 
@@ -48,6 +49,7 @@ AGENT_FARM_DATA_DIR/
   artifacts/<task-id>/...
   logs/
   benchmarks/<artifact-id>.json
+  runs/<run-id>/
 ```
 
 目录按 `0700` 创建；benchmark/artifact 临时文件使用原子 rename。备份与恢复必须把 SQLite database 视为一个 WAL 数据库，不能只在服务运行时随意复制 `db.sqlite` 而忽略 WAL。

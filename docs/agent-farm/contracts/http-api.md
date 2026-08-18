@@ -166,7 +166,7 @@ POST /api/tasks/:id/reviews
 POST /api/tasks/:id/reviews/:decision
 ```
 
-请求包含 `decision: approved|rejected`（path 版本可省略 body decision）、必需 `diff_digest` 和可选 `summary`。`x-agent-farm-actor` 可指定 reviewer，默认 `human`。Approval 只绑定该 digest；diff 改变后旧 approval stale。
+请求包含 `decision: approved|rejected`（path 版本可省略 body decision）、必需 `diff_digest` 和可选 `summary`。当前单用户 loopback 模式固定写入 `local_user` actor；调用方不能通过 `x-agent-farm-actor` 伪造 reviewer，该 actor 也不是远程 principal authentication。Approval 只绑定该 digest；diff 改变后旧 approval stale。
 
 ### Harvest
 

@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import type { IncomingMessage, Server as HttpServer } from "node:http";
+import { localRequestBoundary } from "./config.js";
 import type { Duplex } from "node:stream";
 import { WebSocketServer, WebSocket } from "ws";
 import type { RawData } from "ws";
@@ -562,20 +563,6 @@ function registerConnection(ws: WebSocket, request: IncomingMessage): void {
   });
 }
 
-function browserOriginAllowed(request: IncomingMessage): boolean {
-  const originHeader = request.headers.origin;
-  if (originHeader === undefined) return true;
-  if (Array.isArray(originHeader) || originHeader.includes(",")) return false;
-  const hostHeader = request.headers.host;
-  if (typeof hostHeader !== "string" || hostHeader.length === 0) return false;
-  try {
-    const origin = new URL(originHeader);
-    return (origin.protocol === "http:" || origin.protocol === "https:") && origin.host === hostHeader;
-  } catch {
-    return false;
-  }
-}
-
 function parseAfterSeq(requestUrl: URL): number | null {
   const values = requestUrl.searchParams.getAll("after_seq");
   if (values.length === 0) return 0;
@@ -638,8 +625,14 @@ export function attachWs(server: HttpServer): WebSocketServer {
       rejectUpgrade(socket, 405, "Method Not Allowed", "WebSocket upgrade requires GET");
       return;
     }
-    if (!browserOriginAllowed(request)) {
-      rejectUpgrade(socket, 403, "Forbidden", "WebSocket Origin must match the HTTP Host");
+    const boundaryFailure = localRequestBoundary(request.headers);
+    if (boundaryFailure) {
+      rejectUpgrade(
+        socket,
+        boundaryFailure.status,
+        boundaryFailure.status === 403 ? "Forbidden" : "Bad Request",
+        boundaryFailure.message,
+      );
       return;
     }
 

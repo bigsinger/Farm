@@ -1,10 +1,10 @@
 # 部署、监控与回滚
 
-当前实现是本地开发控制面：默认 `127.0.0.1`、无应用鉴权、不是互联网多租户服务。部署闭环必须按 `build → stage → start → smoke → monitor → rollback` 执行，并同时处理 SQLite、Git worktree、Claude provider 与静态资源许可。
+当前实现是本机 loopback-only 控制面：只接受 `127.0.0.1` / `localhost` / `::1`、无远程应用鉴权、不是互联网多租户服务。非 loopback bind 会在任何 data/SQLite/migration 写入前失败。部署闭环必须按 `build → stage → start → smoke → monitor → rollback` 执行，并同时处理 SQLite、Git worktree、Claude provider 与静态资源许可。禁止把本服务挂到 LAN/public reverse proxy。
 
 ## 0. 发布门槛
 
-- Node.js 20+、pnpm、Git、sqlite3 可用；
+- Node.js `>=20.11.0`、pnpm、Git、sqlite3 可用；
 - 使用固定代码 commit 和与之匹配的 lockfiles；
 - 有独立、可写、受权限保护的绝对 `AGENT_FARM_DATA_DIR`；
 - 进程用户对目标 repositories 和 data root 有明确权限；
@@ -58,13 +58,13 @@ GIT_COMMITTER_EMAIL='agent-farm@example.invalid' \
 pnpm --dir server start
 ```
 
-`server/.env` 会在启动时读取，随后 `~/.claude/settings.json` 的 `env` 只补尚未设置的键。优先级：
+`server/.env` 会在启动时读取，随后 `~/.claude/settings.json` 的 `env` 只补尚未设置、且属于 provider/transport allowlist 的键。优先级：
 
 ```text
-shell env > server/.env > ~/.claude/settings.json env
+shell env > server/.env > ~/.claude/settings.json provider/transport env
 ```
 
-设 `AGENT_FARM_DISABLE_USER_SETTINGS=1` 可隔离服务账户。Provider kind 检测只根据显式 env；磁盘上的默认 Anthropic profile 若没有通过 `ANTHROPIC_PROFILE` 显式选择，Agent Farm 会视为 provider unavailable。
+设 `AGENT_FARM_DISABLE_USER_SETTINGS=1` 可隔离服务账户。Provider kind 检测只根据显式 env；磁盘上的默认 Anthropic profile 若没有通过 `ANTHROPIC_PROFILE` 显式选择，Agent Farm 会视为 provider unavailable。HTTP/WS 还要求 canonical loopback Host；browser 请求必须匹配精确 Origin allowlist，并拒绝 `Origin: null` 与 cross-site `Sec-Fetch-Site`。
 
 使用进程监督器时：
 

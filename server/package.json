@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=20"
+    "node": ">=20.11.0"
   },
   "scripts": {
     "dev": "tsx watch src/index.ts",
@@ -12,10 +12,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@anthropic-ai/claude-agent-sdk": "0.3.142",
+    "@anthropic-ai/claude-agent-sdk": "0.3.227",
+    "@anthropic-ai/sandbox-runtime": "0.0.71",
     "better-sqlite3": "^12.11.1",
     "express": "^4.21.0",
-    "ws": "^8.18.0"
+    "ws": "^8.18.0",
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.11",

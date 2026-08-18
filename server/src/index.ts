@@ -5,6 +5,7 @@ import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
 import express, { type Request, type Response } from "express";
 import { cancelAllAgentRuns, providerKind } from "./agent.js";
+import { HOST, PORT, localBoundaryMiddleware, isLoopbackHost } from "./config.js";
 import { closeDatabase, DB_PATH } from "./db.js";
 import {
   activeBackgroundRuns,
@@ -47,22 +48,12 @@ const repositoryRoot = path.resolve(moduleDir, "../..");
 const webDist = path.join(repositoryRoot, "web-app", "dist");
 const assetRoot = path.join(repositoryRoot, "FarmCreator", "assets");
 
-const port = Number(process.env.PORT ?? 7878);
-const host = process.env.HOST?.trim() || "127.0.0.1";
-if (!Number.isSafeInteger(port) || port <= 0 || port > 65_535) throw new Error("PORT must be an integer from 1 to 65535.");
-
-function isLoopbackHost(value: string): boolean {
-  const normalized = value.trim().replace(/^\[|\]$/g, "").toLowerCase();
-  if (normalized === "localhost" || normalized === "::1") return true;
-  const octets = normalized.split(".");
-  return octets.length === 4 && octets.every((octet) => /^\d{1,3}$/.test(octet) && Number(octet) <= 255) && Number(octets[0]) === 127;
-}
-
-const servesLocalAssets = isLoopbackHost(host) && fs.existsSync(assetRoot);
+const servesLocalAssets = isLoopbackHost(HOST) && fs.existsSync(assetRoot);
 
 const app = express();
 app.disable("x-powered-by");
 app.use(requestIdMiddleware);
+app.use(localBoundaryMiddleware);
 app.use(express.json({ limit: process.env.AGENT_FARM_JSON_LIMIT ?? "2mb", strict: true }));
 app.use((_req, res, next) => {
   res.setHeader("x-content-type-options", "nosniff");
@@ -186,12 +177,13 @@ async function start(): Promise<void> {
   await scheduleReadyTasks();
   await new Promise<void>((resolve, reject) => {
     httpServer.once("error", reject);
-    httpServer.listen(port, host, () => {
+    httpServer.listen(PORT, HOST, () => {
       httpServer.off("error", reject);
       resolve();
     });
   });
-  console.log(`Agent Farm listening on http://${host}:${port}; ledger seq=${lastEventSeq()}; reconciled=${reconciliation.reconciled}; recovery_required=${reconciliation.recovery_required}.`);
+  const listenHost = HOST.includes(":") ? `[${HOST}]` : HOST;
+  console.log(`Agent Farm listening on http://${listenHost}:${PORT}; ledger seq=${lastEventSeq()}; reconciled=${reconciliation.reconciled}; recovery_required=${reconciliation.recovery_required}.`);
   console.log(`Provider: ${providerKind() ?? "not configured"}.`);
   if (fs.existsSync(assetRoot) && !servesLocalAssets) {
     console.log("Local project art assets are not served on non-loopback bindings.");
