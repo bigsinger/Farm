@@ -13,6 +13,8 @@
 
 当前版本只接受 loopback bind：`127.0.0.1`、`localhost`、`::1`。非 loopback / wildcard HOST 会在创建 data directory、SQLite、WAL、migration 或 ledger metadata 前 fail closed。不要把 Agent Farm 挂到 LAN/public reverse proxy；未来远程访问必须单独设计 TLS、认证、授权、CSRF 与 tenant/provider isolation。本实现也不把固定 `local_user` review actor 宣称为远程 principal。
 
+Agent run 使用两级 Sandbox Runtime：outer 包住整个 Claude Code 进程，inner 只执行 workspace Bash。Bash 不再走 built-in 工具，而是经 `mcp__workspace__bash`；sandbox unavailable 记为 `sandbox_blocked`（`provider_status=not_run`），不得伪装成 provider success/failure。SDK ledger 只保留结构化 allowlist，不保存 command/tool 原文。macOS 上若 data dir 路径过长，SRT 临时 socket 会落到短 `/tmp/af*` 路径。
+
 健康检查：
 
 ```bash

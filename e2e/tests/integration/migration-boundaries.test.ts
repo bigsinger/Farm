@@ -15,7 +15,12 @@ const REPOSITORY_ROOT = resolve(HERE, "../../..");
 const MIGRATIONS_ROOT = join(SERVER_ROOT, "migrations");
 const TSX = join(SERVER_ROOT, "node_modules", ".bin", "tsx");
 const DB_IMPORT = join(SERVER_ROOT, "src", "db.ts");
-const MIGRATION_FILES = ["000_legacy_compat.sql", "001_hyperedge_core.sql", "002_legacy_workspace_backfill.sql"] as const;
+const MIGRATION_FILES = [
+  "000_legacy_compat.sql",
+  "001_hyperedge_core.sql",
+  "002_legacy_workspace_backfill.sql",
+  "003_sandbox_blocked_status.sql",
+] as const;
 const EXPECTED_PUBLISHED_CHECKSUMS = {
   "000_legacy_compat.sql": "45b8f5ff907f214b0e20f4a9b4f2d37f92a762651b8ce2d7305001ffeda9995d",
   "001_hyperedge_core.sql": "ce2a2754a3b95a39197642b71ef9054d509d7a6882f9f5f74ad46d77c0a78acd",
@@ -145,6 +150,7 @@ test("published migration checksums remain immutable and migration 002 has an ex
   assert.equal(await migrationChecksum("000_legacy_compat.sql"), EXPECTED_PUBLISHED_CHECKSUMS["000_legacy_compat.sql"]);
   assert.equal(await migrationChecksum("001_hyperedge_core.sql"), EXPECTED_PUBLISHED_CHECKSUMS["001_hyperedge_core.sql"]);
   assert.match(await migrationChecksum("002_legacy_workspace_backfill.sql"), /^[a-f0-9]{64}$/);
+  assert.match(await migrationChecksum("003_sandbox_blocked_status.sql"), /^[a-f0-9]{64}$/);
 });
 
 test("real legacy SQLite rows backfill idempotently and are visible through current and compatibility APIs", async () => {

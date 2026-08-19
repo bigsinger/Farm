@@ -166,13 +166,19 @@ function applyMigrations(): void {
       continue;
     }
 
-    db.transaction(() => {
-      prepareMigration(migration);
-      db.exec(migration.sql);
-      db.prepare(
-        "INSERT INTO schema_migrations (version, filename, sha256, applied_at) VALUES (?, ?, ?, ?)",
-      ).run(migration.version, migration.filename, migration.sha256, Date.now());
-    })();
+    const requiresForeignKeysOff = migration.filename === "003_sandbox_blocked_status.sql";
+    if (requiresForeignKeysOff) db.pragma("foreign_keys = OFF");
+    try {
+      db.transaction(() => {
+        prepareMigration(migration);
+        db.exec(migration.sql);
+        db.prepare(
+          "INSERT INTO schema_migrations (version, filename, sha256, applied_at) VALUES (?, ?, ?, ?)",
+        ).run(migration.version, migration.filename, migration.sha256, Date.now());
+      })();
+    } finally {
+      if (requiresForeignKeysOff) db.pragma("foreign_keys = ON");
+    }
   }
 }
 

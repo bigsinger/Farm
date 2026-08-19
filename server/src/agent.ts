@@ -1,13 +1,38 @@
+import { spawn, type ChildProcess } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   query,
   type CanUseTool,
   type Query,
   type SDKMessage,
   type SDKResultMessage,
+  type SpawnedProcess,
+  type SpawnOptions,
 } from "@anthropic-ai/claude-agent-sdk";
+import {
+  SandboxRuntimeConfigSchema,
+  type SandboxRuntimeConfig,
+} from "@anthropic-ai/sandbox-runtime";
+import {
+  AgentSandboxError,
+  cleanupWorkspaceSandbox,
+  createWorkspaceSandbox,
+  markWorkspaceSandboxReleased,
+  stopWorkspaceCommands,
+  verifyWorkspaceSandbox,
+  type SandboxCleanupProof,
+  type WorkspaceSandbox,
+} from "./agent-sandbox.js";
+import { createWorkspaceBashServer } from "./workspace-bash.js";
 import { redactSensitiveText } from "./redaction.js";
+
+const moduleDir = path.dirname(fileURLToPath(import.meta.url));
+const SRT_CLI = path.resolve(
+  moduleDir,
+  "../node_modules/@anthropic-ai/sandbox-runtime/dist/cli.js",
+);
 
 export type RunSdkOptions = {
   taskId: string;
@@ -28,6 +53,7 @@ export type SdkRunTerminal = {
     | "cancelled"
     | "timed_out"
     | "provider_blocked"
+    | "sandbox_blocked"
     | "crashed";
   sessionId: string | null;
   resultSubtype: SDKResultMessage["subtype"] | null;
@@ -40,21 +66,24 @@ export type SdkRunTerminal = {
   errorCode: string | null;
   errorMessage: string | null;
   rawResult: SDKResultMessage | null;
+  cleanupProof?: SandboxCleanupProof | null;
 };
 
 type StopReason = "cancelled" | "timed_out";
 
 type ActiveRunControl = {
-  query: Query;
+  query: Query | null;
   abortController: AbortController;
+  sandbox: WorkspaceSandbox | null;
   stopReason: StopReason | null;
   interruptionRequested: boolean;
   stopSignal: Promise<void>;
   resolveStopSignal: () => void;
 };
 
-const ALLOWED_TOOLS = ["Read", "Write", "Edit", "Glob", "Grep", "Bash"];
+const ALLOWED_TOOLS = ["Read", "Write", "Edit", "Glob", "Grep"];
 const DISALLOWED_TOOLS = [
+  "Bash",
   "WebFetch",
   "WebSearch",
   "Agent",
@@ -108,7 +137,7 @@ export async function isWorktreePathAllowed(cwd: string, candidate: string): Pro
 
 function worktreeToolPermission(cwd: string): CanUseTool {
   return async (toolName, input, options) => {
-    if (!ALLOWED_TOOLS.includes(toolName)) {
+    if (!ALLOWED_TOOLS.includes(toolName) && toolName !== "mcp__workspace__bash") {
       return { behavior: "deny", message: `Tool ${toolName} is outside the Agent Farm allowlist.`, interrupt: true };
     }
 
@@ -166,6 +195,216 @@ export function hasProviderAuth(): boolean {
   return providerKind() !== null;
 }
 
+function copyEnv(names: readonly string[], target: NodeJS.ProcessEnv): void {
+  for (const name of names) {
+    const value = process.env[name];
+    if (typeof value === "string" && value.length > 0) target[name] = value;
+  }
+}
+
+function providerNetworkDomains(kind: string): string[] {
+  switch (kind) {
+    case "bedrock":
+    case "bedrock-mantle":
+    case "anthropic-aws":
+      return [
+        "bedrock-runtime.*.amazonaws.com",
+        "bedrock.*.amazonaws.com",
+        "sts.*.amazonaws.com",
+        "sts.amazonaws.com",
+      ];
+    case "vertex":
+      return [
+        "aiplatform.googleapis.com",
+        "*.aiplatform.googleapis.com",
+        "oauth2.googleapis.com",
+        "www.googleapis.com",
+      ];
+    case "foundry":
+      return [
+        "*.azure.com",
+        "*.openai.azure.com",
+        "login.microsoftonline.com",
+      ];
+    case "custom-endpoint": {
+      try {
+        const host = new URL(process.env.ANTHROPIC_BASE_URL!).hostname;
+        return host ? [host] : ["api.anthropic.com"];
+      } catch {
+        return ["api.anthropic.com"];
+      }
+    }
+    default:
+      return ["api.anthropic.com", "claude.ai"];
+  }
+}
+
+function buildSdkEnvironment(configDir: string, kind: string): NodeJS.ProcessEnv {
+  const env: NodeJS.ProcessEnv = {
+    PATH: process.env.PATH ?? "/usr/bin:/bin:/usr/sbin:/sbin",
+    HOME: configDir,
+    USERPROFILE: configDir,
+    TMPDIR: path.join(configDir, "tmp"),
+    TMP: path.join(configDir, "tmp"),
+    TEMP: path.join(configDir, "tmp"),
+    LANG: process.env.LANG ?? "C.UTF-8",
+    LC_ALL: process.env.LC_ALL ?? process.env.LANG ?? "C.UTF-8",
+    TERM: "dumb",
+    CI: "1",
+    NO_COLOR: "1",
+    CLAUDE_CONFIG_DIR: configDir,
+    CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: "1",
+  };
+  copyEnv(["SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS", "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY"], env);
+
+  if (kind === "bedrock" || kind === "bedrock-mantle" || kind === "anthropic-aws") {
+    copyEnv([
+      "CLAUDE_CODE_USE_BEDROCK",
+      "CLAUDE_CODE_USE_MANTLE",
+      "CLAUDE_CODE_USE_ANTHROPIC_AWS",
+      "AWS_ACCESS_KEY_ID",
+      "AWS_SECRET_ACCESS_KEY",
+      "AWS_SESSION_TOKEN",
+      "AWS_REGION",
+      "AWS_DEFAULT_REGION",
+      "AWS_PROFILE",
+      "AWS_SHARED_CREDENTIALS_FILE",
+      "AWS_CONFIG_FILE",
+      "AWS_WEB_IDENTITY_TOKEN_FILE",
+      "AWS_ROLE_ARN",
+      "AWS_ROLE_SESSION_NAME",
+    ], env);
+  } else if (kind === "vertex") {
+    copyEnv([
+      "CLAUDE_CODE_USE_VERTEX",
+      "CLOUD_ML_REGION",
+      "ANTHROPIC_VERTEX_PROJECT_ID",
+      "GOOGLE_CLOUD_PROJECT",
+      "GCLOUD_PROJECT",
+      "GOOGLE_APPLICATION_CREDENTIALS",
+    ], env);
+  } else if (kind === "foundry") {
+    copyEnv([
+      "CLAUDE_CODE_USE_FOUNDRY",
+      "AZURE_API_KEY",
+      "AZURE_CLIENT_ID",
+      "AZURE_CLIENT_SECRET",
+      "AZURE_TENANT_ID",
+      "AZURE_OPENAI_ENDPOINT",
+    ], env);
+  } else {
+    copyEnv([
+      "ANTHROPIC_API_KEY",
+      "ANTHROPIC_AUTH_TOKEN",
+      "CLAUDE_CODE_OAUTH_TOKEN",
+      "ANTHROPIC_BASE_URL",
+      "ANTHROPIC_PROFILE",
+      "ANTHROPIC_FEDERATION_RULE_ID",
+      "ANTHROPIC_ORGANIZATION_ID",
+      "ANTHROPIC_SERVICE_ACCOUNT_ID",
+      "ANTHROPIC_IDENTITY_TOKEN",
+      "ANTHROPIC_IDENTITY_TOKEN_FILE",
+    ], env);
+  }
+  return env;
+}
+
+async function existingPath(candidate: string): Promise<string | null> {
+  try {
+    return path.normalize(await fs.realpath(path.resolve(candidate)));
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw error;
+  }
+}
+
+async function writeOuterPolicy(
+  cwd: string,
+  runDir: string,
+  tempDir: string,
+  kind: string,
+  policyPath: string,
+): Promise<void> {
+  const readRoots = new Set<string>([cwd, runDir, tempDir]);
+  for (const candidate of [
+    path.dirname(process.execPath),
+    path.resolve(moduleDir, "../node_modules/@anthropic-ai/claude-agent-sdk"),
+    path.resolve(moduleDir, "../node_modules/@anthropic-ai/sandbox-runtime"),
+    "/etc/ssl",
+    "/private/etc/ssl",
+    "/etc/ca-certificates",
+  ]) {
+    const existing = await existingPath(candidate);
+    if (existing) readRoots.add(existing);
+  }
+  for (const envName of [
+    "SSL_CERT_FILE",
+    "NODE_EXTRA_CA_CERTS",
+    "GOOGLE_APPLICATION_CREDENTIALS",
+    "AWS_SHARED_CREDENTIALS_FILE",
+    "AWS_CONFIG_FILE",
+    "AWS_WEB_IDENTITY_TOKEN_FILE",
+    "ANTHROPIC_IDENTITY_TOKEN_FILE",
+  ]) {
+    const value = process.env[envName];
+    if (!value) continue;
+    const existing = await existingPath(value);
+    if (existing) readRoots.add(path.dirname(existing) === existing ? existing : path.dirname(existing));
+    if (existing) readRoots.add(existing);
+  }
+
+  const policy: SandboxRuntimeConfig = {
+    network: {
+      allowedDomains: providerNetworkDomains(kind),
+      deniedDomains: [],
+      allowUnixSockets: [],
+      allowAllUnixSockets: false,
+      allowLocalBinding: false,
+    },
+    filesystem: {
+      denyRead: [path.parse(cwd).root],
+      allowRead: [...readRoots],
+      allowWrite: [cwd, runDir, tempDir],
+      denyWrite: [path.join(cwd, ".git")],
+    },
+    enableWeakerNestedSandbox: false,
+    enableWeakerNetworkIsolation: false,
+    allowAppleEvents: false,
+  };
+  const parsed = SandboxRuntimeConfigSchema.parse(policy);
+  await fs.writeFile(policyPath, `${JSON.stringify(parsed, null, 2)}\n`, { mode: 0o600 });
+  await fs.chmod(policyPath, 0o600);
+}
+
+function shellQuote(value: string): string {
+  if (process.platform === "win32") return `"${value.replaceAll('"', '\\"')}"`;
+  return `'${value.replaceAll("'", `'"'"'`)}'`;
+}
+
+function spawnOuterSandboxedProcess(
+  options: SpawnOptions,
+  policyPath: string,
+): SpawnedProcess {
+  const commandLine = [shellQuote(options.command), ...options.args.map(shellQuote)].join(" ");
+  const child: ChildProcess = spawn(
+    process.execPath,
+    [SRT_CLI, "--settings", policyPath, "-c", commandLine],
+    {
+      cwd: options.cwd,
+      env: options.env,
+      stdio: ["pipe", "pipe", "pipe"],
+      detached: process.platform !== "win32",
+      windowsHide: true,
+      signal: options.signal,
+    },
+  );
+  if (!child.stdin || !child.stdout) {
+    child.kill("SIGKILL");
+    throw new AgentSandboxError("Outer sandboxed Claude process did not expose stdin/stdout pipes.");
+  }
+  return child as SpawnedProcess;
+}
+
 function safeErrorMessage(error: unknown): string {
   if (error instanceof Error && error.message.trim()) return redactSensitiveText(error.message);
   if (typeof error === "string" && error.trim()) return redactSensitiveText(error);
@@ -183,6 +422,7 @@ function terminal(
   rawResult: SDKResultMessage | null,
   errorCode: string | null,
   errorMessage: string | null,
+  cleanupProof: SandboxCleanupProof | null = null,
 ): SdkRunTerminal {
   return {
     status,
@@ -197,10 +437,22 @@ function terminal(
     errorCode,
     errorMessage,
     rawResult,
+    cleanupProof,
   };
 }
 
-function requestInterruption(control: ActiveRunControl, reason?: StopReason): void {
+async function closeQuery(control: ActiveRunControl): Promise<void> {
+  const current = control.query;
+  if (!current) return;
+  control.query = null;
+  try {
+    current.close();
+  } catch {
+    // close is best-effort once interruption already started.
+  }
+}
+
+async function requestInterruption(control: ActiveRunControl, reason?: StopReason): Promise<void> {
   if (reason !== undefined && control.stopReason === null) {
     control.stopReason = reason;
   }
@@ -209,15 +461,23 @@ function requestInterruption(control: ActiveRunControl, reason?: StopReason): vo
   if (control.interruptionRequested) return;
   control.interruptionRequested = true;
 
-  try {
-    const interrupted = control.query.interrupt();
-    void interrupted.catch(() => undefined);
-  } catch {
-    // Query initialization succeeded, but an SDK implementation may still throw
-    // synchronously while dispatching the control request. Abort remains mandatory.
+  if (control.sandbox) {
+    control.sandbox.runtime.closing = true;
+    await stopWorkspaceCommands(control.sandbox, "cancelled").catch(() => undefined);
+  }
+
+  if (control.query) {
+    try {
+      const interrupted = control.query.interrupt();
+      void interrupted.catch(() => undefined);
+    } catch {
+      // Query initialization succeeded, but an SDK implementation may still throw
+      // synchronously while dispatching the control request. Abort remains mandatory.
+    }
   }
 
   control.abortController.abort();
+  await closeQuery(control);
 }
 
 function resultMessage(result: SDKResultMessage): string {
@@ -248,6 +508,7 @@ function providerBlockedTerminal(
   startedAt: number,
   sessionId: string | null,
   rawResult: SDKResultMessage | null,
+  cleanupProof: SandboxCleanupProof | null,
 ): SdkRunTerminal {
   return terminal(
     startedAt,
@@ -256,6 +517,7 @@ function providerBlockedTerminal(
     rawResult,
     "provider_auth_failed",
     "The Claude provider rejected authentication or access. Update provider credentials before retrying.",
+    cleanupProof,
   );
 }
 
@@ -264,6 +526,7 @@ function stopTerminal(
   reason: StopReason,
   sessionId: string | null,
   rawResult: SDKResultMessage | null,
+  cleanupProof: SandboxCleanupProof | null,
 ): SdkRunTerminal {
   if (reason === "timed_out") {
     return terminal(
@@ -273,6 +536,7 @@ function stopTerminal(
       rawResult,
       "run_timed_out",
       "The Claude Agent SDK run exceeded its timeout.",
+      cleanupProof,
     );
   }
 
@@ -283,6 +547,7 @@ function stopTerminal(
     rawResult,
     "run_cancelled",
     "The Claude Agent SDK run was cancelled.",
+    cleanupProof,
   );
 }
 
@@ -322,65 +587,32 @@ export async function executeAgentRun(opts: RunSdkOptions): Promise<SdkRunTermin
     );
   }
 
-  const abortController = new AbortController();
-  let sdkQuery: Query;
-
-  try {
-    sdkQuery = query({
-      prompt: opts.prompt,
-      options: {
-        cwd: opts.cwd,
-        abortController,
-        persistSession: true,
-        permissionMode: "default",
-        tools: [...ALLOWED_TOOLS],
-        disallowedTools: [...DISALLOWED_TOOLS],
-        settingSources: [],
-        canUseTool: worktreeToolPermission(opts.cwd),
-        sandbox: {
-          enabled: true,
-          failIfUnavailable: true,
-          autoAllowBashIfSandboxed: true,
-          allowUnsandboxedCommands: false,
-          network: {
-            allowedDomains: [],
-            allowManagedDomainsOnly: true,
-            allowUnixSockets: [],
-            allowAllUnixSockets: false,
-            allowLocalBinding: false,
-          },
-          filesystem: {
-            allowRead: [opts.cwd],
-            allowWrite: [opts.cwd],
-          },
-        },
-        systemPrompt: SYSTEM_PROMPT,
-        ...(opts.model === undefined ? {} : { model: opts.model }),
-        ...(opts.maxBudgetUsd === undefined
-          ? {}
-          : { maxBudgetUsd: opts.maxBudgetUsd }),
-        ...(opts.maxTurns === undefined ? {} : { maxTurns: opts.maxTurns }),
-      },
-    });
-  } catch (error) {
-    abortController.abort();
+  const kind = providerKind();
+  if (!kind) {
     return terminal(
       startedAt,
-      "crashed",
+      "provider_blocked",
       null,
       null,
-      "query_initialization_failed",
-      safeErrorMessage(error),
+      "provider_auth_missing",
+      "No supported Claude provider authentication is configured.",
     );
   }
+
+  const abortController = new AbortController();
+  let sandbox: WorkspaceSandbox | null = null;
+  let outerPolicyPath: string | null = null;
+  let cleanupProof: SandboxCleanupProof | null = null;
+  let sdkQuery: Query | null = null;
 
   let resolveStopSignal!: () => void;
   const stopSignal = new Promise<void>((resolve) => {
     resolveStopSignal = resolve;
   });
   const control: ActiveRunControl = {
-    query: sdkQuery,
+    query: null,
     abortController,
+    sandbox: null,
     stopReason: null,
     interruptionRequested: false,
     stopSignal,
@@ -389,7 +621,7 @@ export async function executeAgentRun(opts: RunSdkOptions): Promise<SdkRunTermin
   active.set(opts.runId, control);
 
   const timeout = setTimeout(() => {
-    requestInterruption(control, "timed_out");
+    void requestInterruption(control, "timed_out");
   }, opts.timeoutMs);
   timeout.unref();
 
@@ -400,6 +632,64 @@ export async function executeAgentRun(opts: RunSdkOptions): Promise<SdkRunTermin
   let onMessageError: unknown = null;
 
   try {
+    sandbox = await createWorkspaceSandbox(opts.cwd, opts.runId);
+    control.sandbox = sandbox;
+    await fs.mkdir(path.join(sandbox.runDir, "tmp"), { recursive: true, mode: 0o700 });
+    await verifyWorkspaceSandbox(sandbox);
+    outerPolicyPath = path.join(sandbox.runDir, "outer-srt-policy.json");
+    await writeOuterPolicy(sandbox.cwd, sandbox.runDir, sandbox.tempDir, kind, outerPolicyPath);
+    const sdkEnv = buildSdkEnvironment(sandbox.homeDir, kind);
+    const workspaceServer = createWorkspaceBashServer(sandbox, abortController.signal);
+
+    try {
+      sdkQuery = query({
+        prompt: opts.prompt,
+        options: {
+          cwd: opts.cwd,
+          abortController,
+          persistSession: false,
+          permissionMode: "default",
+          tools: [...ALLOWED_TOOLS],
+          disallowedTools: [...DISALLOWED_TOOLS],
+          settingSources: [],
+          canUseTool: worktreeToolPermission(opts.cwd),
+          mcpServers: {
+            workspace: workspaceServer,
+          },
+          strictMcpConfig: true,
+          toolAliases: {
+            Bash: "mcp__workspace__bash",
+          },
+          env: sdkEnv,
+          systemPrompt: SYSTEM_PROMPT,
+          spawnClaudeCodeProcess: (spawnOptions) => {
+            if (!outerPolicyPath) {
+              throw new AgentSandboxError("Outer sandbox policy was not prepared before Claude process spawn.");
+            }
+            return spawnOuterSandboxedProcess(spawnOptions, outerPolicyPath);
+          },
+          ...(opts.model === undefined ? {} : { model: opts.model }),
+          ...(opts.maxBudgetUsd === undefined
+            ? {}
+            : { maxBudgetUsd: opts.maxBudgetUsd }),
+          ...(opts.maxTurns === undefined ? {} : { maxTurns: opts.maxTurns }),
+        },
+      });
+    } catch (error) {
+      if (error instanceof AgentSandboxError) throw error;
+      abortController.abort();
+      return terminal(
+        startedAt,
+        "crashed",
+        null,
+        null,
+        "query_initialization_failed",
+        safeErrorMessage(error),
+      );
+    }
+
+    control.query = sdkQuery;
+
     while (true) {
       const next = sdkQuery.next().then(
         (value) => ({ kind: "next" as const, value }),
@@ -441,16 +731,37 @@ export async function executeAgentRun(opts: RunSdkOptions): Promise<SdkRunTermin
       if (delivery.kind === "stopped") break;
       if (delivery.kind === "error") {
         onMessageError = delivery.error;
-        requestInterruption(control);
+        await requestInterruption(control);
         break;
       }
       if (providerAuthRejected) {
-        requestInterruption(control);
+        await requestInterruption(control);
         break;
       }
     }
+  } catch (error) {
+    if (error instanceof AgentSandboxError) {
+      cleanupProof = await cleanupWorkspaceSandbox(sandbox);
+      if (active.get(opts.runId) === control) active.delete(opts.runId);
+      clearTimeout(timeout);
+      return terminal(
+        startedAt,
+        "sandbox_blocked",
+        sessionId,
+        rawResult,
+        error.code,
+        error.message,
+        cleanupProof,
+      );
+    }
+    iteratorError = error;
   } finally {
     clearTimeout(timeout);
+    await closeQuery(control);
+    if (sandbox) {
+      await markWorkspaceSandboxReleased(sandbox).catch(() => undefined);
+      cleanupProof = await cleanupWorkspaceSandbox(sandbox);
+    }
     if (active.get(opts.runId) === control) {
       active.delete(opts.runId);
     }
@@ -464,19 +775,20 @@ export async function executeAgentRun(opts: RunSdkOptions): Promise<SdkRunTermin
       rawResult,
       "on_message_failed",
       safeErrorMessage(onMessageError),
+      cleanupProof,
     );
   }
 
   if (providerAuthRejected || (rawResult !== null && providerAuthResult(rawResult))) {
-    return providerBlockedTerminal(startedAt, sessionId, rawResult);
+    return providerBlockedTerminal(startedAt, sessionId, rawResult, cleanupProof);
   }
 
   if (control.stopReason !== null) {
-    return stopTerminal(startedAt, control.stopReason, sessionId, rawResult);
+    return stopTerminal(startedAt, control.stopReason, sessionId, rawResult, cleanupProof);
   }
 
   if (rawResult?.subtype === "success" && rawResult.is_error === false) {
-    return terminal(startedAt, "succeeded", sessionId, rawResult, null, null);
+    return terminal(startedAt, "succeeded", sessionId, rawResult, null, null, cleanupProof);
   }
 
   if (rawResult !== null) {
@@ -487,6 +799,7 @@ export async function executeAgentRun(opts: RunSdkOptions): Promise<SdkRunTermin
       rawResult,
       rawResult.subtype === "success" ? "sdk_result_error" : rawResult.subtype,
       resultMessage(rawResult),
+      cleanupProof,
     );
   }
 
@@ -499,17 +812,26 @@ export async function executeAgentRun(opts: RunSdkOptions): Promise<SdkRunTermin
     iteratorError === null
       ? "The Claude Agent SDK iterator completed without a result message."
       : safeErrorMessage(iteratorError),
+    cleanupProof,
   );
 }
 
 export async function cancelAgentRun(runId: string): Promise<boolean> {
   const control = active.get(runId);
   if (control === undefined) return false;
-  requestInterruption(control, "cancelled");
+  await requestInterruption(control, "cancelled");
   return true;
 }
 
 export async function cancelAllAgentRuns(): Promise<void> {
   const runIds = [...active.keys()];
   await Promise.all(runIds.map((runId) => cancelAgentRun(runId)));
+}
+
+export function activeSandboxRunDirs(): Set<string> {
+  return new Set(
+    [...active.values()]
+      .map((control) => control.sandbox?.runDir)
+      .filter((value): value is string => typeof value === "string"),
+  );
 }

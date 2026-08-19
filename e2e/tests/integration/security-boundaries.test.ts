@@ -8,7 +8,7 @@ import { join } from "node:path";
 import { test } from "node:test";
 import { isWorktreePathAllowed } from "../../../server/src/agent.js";
 import { errorMiddleware } from "../../../server/src/errors.js";
-import { sanitizeForAudit } from "../../../server/src/ledger.js";
+import { sanitizeForAudit, sdkAuditPayload } from "../../../server/src/ledger.js";
 import { createHarness, SERVER_ROOT } from "../../lib/harness.js";
 import { LedgerCollector } from "../../lib/ws-ledger.js";
 
@@ -334,6 +334,50 @@ test("audit sanitization preserves numeric usage while redacting credential keys
     if (previous === undefined) delete process.env.AGENT_FARM_TEST_AUTH_TOKEN;
     else process.env.AGENT_FARM_TEST_AUTH_TOKEN = previous;
   }
+});
+
+test("sdkAuditPayload keeps cost metadata and drops command/tool content", () => {
+  const payload = sdkAuditPayload({
+    type: "result",
+    subtype: "success",
+    session_id: "session-1",
+    uuid: "uuid-1",
+    is_error: false,
+    duration_ms: 12,
+    duration_api_ms: 8,
+    num_turns: 2,
+    total_cost_usd: 0,
+    stop_reason: "end_turn",
+    usage: { input_tokens: 3, output_tokens: 4, cache_read_input_tokens: 1 },
+    modelUsage: { "claude-test": { inputTokens: 3, outputTokens: 4, costUSD: 0 } },
+    permission_denials: [{ tool_name: "Bash", tool_use_id: "tu-1", tool_input: { command: "cat /etc/passwd" } }],
+    result: "secret assistant text must not persist",
+    errors: [],
+  });
+  assert.equal(payload.type, "result");
+  assert.equal(payload.total_cost_usd, 0);
+  assert.deepEqual(payload.usage, { input_tokens: 3, output_tokens: 4, cache_read_input_tokens: 1 });
+  assert.equal(payload.has_result_text, true);
+  assert.equal("result" in payload, false);
+  assert.deepEqual(payload.permission_denials, [{ tool_name: "Bash", tool_use_id: "tu-1" }]);
+
+  const assistant = sdkAuditPayload({
+    type: "assistant",
+    session_id: "session-1",
+    uuid: "uuid-2",
+    message: {
+      content: [
+        { type: "text", text: "do not store this" },
+        { type: "tool_use", id: "tu-2", name: "Bash", input: { command: "echo secret" } },
+      ],
+    },
+  });
+  assert.deepEqual(assistant.content_blocks, [
+    { type: "text" },
+    { type: "tool_use", id: "tu-2", name: "Bash" },
+  ]);
+  assert.equal(JSON.stringify(assistant).includes("echo secret"), false);
+  assert.equal(JSON.stringify(assistant).includes("do not store this"), false);
 });
 
 test("unexpected HTTP errors expose request ids without internal exception details", () => {

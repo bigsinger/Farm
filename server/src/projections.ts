@@ -416,7 +416,7 @@ function permissionDenialReasons(value: string | null): string[] {
 
 function runBlockingReasons(row: AgentRunRow): string[] {
   const reasons = permissionDenialReasons(row.permission_denials_json);
-  const failed = ["failed", "timed_out", "provider_blocked", "crashed"].includes(row.status);
+  const failed = ["failed", "timed_out", "provider_blocked", "sandbox_blocked", "crashed"].includes(row.status);
   if ((failed || row.provider_status === "blocked" || row.provider_status === "failed") && row.error_code) {
     reasons.push(row.error_code);
   } else if (row.provider_status === "blocked") {

@@ -7,16 +7,18 @@ import {
   appendAuditEvent,
   committedMutation,
   recordAuditEvent,
-  sanitizeForAudit,
+  sdkAuditPayload,
   sha256,
   type EventCollector,
 } from "./ledger.js";
 import {
+  activeSandboxRunDirs,
   cancelAgentRun,
   executeAgentRun,
   providerKind,
   type SdkRunTerminal,
 } from "./agent.js";
+import { AgentSandboxError, cleanupOrphanedWorkspaceSandboxes } from "./agent-sandbox.js";
 import {
   baseCheckoutHealth,
   captureTaskDiff,
@@ -1032,7 +1034,7 @@ async function executeRun(taskId: string, runId: string, input: StartRunInput): 
           repositoryId: task.repository_id,
           taskId,
           runId,
-          payload: sanitizeForAudit(message),
+          payload: sdkAuditPayload(message),
           provenance: { kind: "agent_sdk_event", source: "claude_agent_sdk" },
           occurredAt: now,
         });
@@ -1040,20 +1042,37 @@ async function executeRun(taskId: string, runId: string, input: StartRunInput): 
       },
     });
   } catch (error) {
-    terminal = {
-      status: "crashed",
-      sessionId: null,
-      resultSubtype: null,
-      costUsd: null,
-      numTurns: null,
-      durationMs: Date.now() - startedAt,
-      usage: null,
-      modelUsage: null,
-      permissionDenials: [],
-      errorCode: "agent_runtime_crashed",
-      errorMessage: normalizeInspectionError(error),
-      rawResult: null,
-    };
+    if (error instanceof AgentSandboxError) {
+      terminal = {
+        status: "sandbox_blocked",
+        sessionId: null,
+        resultSubtype: null,
+        costUsd: null,
+        numTurns: null,
+        durationMs: Date.now() - startedAt,
+        usage: null,
+        modelUsage: null,
+        permissionDenials: [],
+        errorCode: error.code,
+        errorMessage: error.message,
+        rawResult: null,
+      };
+    } else {
+      terminal = {
+        status: "crashed",
+        sessionId: null,
+        resultSubtype: null,
+        costUsd: null,
+        numTurns: null,
+        durationMs: Date.now() - startedAt,
+        usage: null,
+        modelUsage: null,
+        permissionDenials: [],
+        errorCode: "agent_runtime_crashed",
+        errorMessage: normalizeInspectionError(error),
+        rawResult: null,
+      };
+    }
   }
   await finishRun(taskId, runId, terminal);
 }
@@ -1075,7 +1094,13 @@ async function finishRun(taskId: string, runId: string, terminal: SdkRunTerminal
   }
 
   const endedAt = Date.now();
-  const providerStatus = terminal.status === "provider_blocked" ? "blocked" : terminal.status === "succeeded" ? "verified" : "failed";
+  const providerStatus = terminal.status === "provider_blocked"
+    ? "blocked"
+    : terminal.status === "sandbox_blocked"
+      ? "not_run"
+      : terminal.status === "succeeded"
+        ? "verified"
+        : "failed";
   const accepted = committedMutation((collector) => {
     const current = db.prepare("SELECT status FROM agent_runs WHERE id = ?").get(runId) as { status: string } | undefined;
     if (!current || !ACTIVE_RUN_STATUSES.has(current.status)) return false;
@@ -1150,14 +1175,18 @@ async function finishRun(taskId: string, runId: string, terminal: SdkRunTerminal
   }
 
   task = taskOrThrow(taskId);
-  const taskStatus = terminal.status === "provider_blocked"
+  const taskStatus = terminal.status === "provider_blocked" || terminal.status === "sandbox_blocked"
     ? "blocked"
     : terminal.status === "cancelled"
       ? "cancelled"
       : terminal.status === "crashed"
         ? "recovery_required"
         : "failed";
-  const reason = terminal.status === "provider_blocked" ? "provider_auth_blocked" : `agent_${terminal.status}`;
+  const reason = terminal.status === "provider_blocked"
+    ? "provider_auth_blocked"
+    : terminal.status === "sandbox_blocked"
+      ? "agent_sandbox_unavailable"
+      : `agent_${terminal.status}`;
   committedMutation((collector) => {
     const changed = db.prepare(`
       UPDATE tasks SET status = ?, provider_status = ?, blocking_reasons_json = ?, total_cost_usd = ?,
@@ -2210,6 +2239,7 @@ export async function reconcileOnStartup(): Promise<{ reconciled: number; recove
     payload: { reconciled, recovery_required: recoveryRequired },
     provenance: { kind: "restart_reconciliation", source: "server_startup" },
   });
+  await cleanupOrphanedWorkspaceSandboxes(activeSandboxRunDirs());
   return { reconciled, recovery_required: recoveryRequired };
 }
 
